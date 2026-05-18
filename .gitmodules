@@ -16,3 +16,15 @@
 [submodule "submodules/ChaosAnalyzers.CleanCode"]
 	path = submodules/ChaosAnalyzers.CleanCode
 	url = ../../ChaosFramework/ChaosAnalyzers.CleanCode.git
+[submodule "submodules/ChaosBuild.CodeFormatter"]
+	path = submodules/ChaosBuild.CodeFormatter
+	url = ../../ChaosFramework/ChaosBuild.CodeFormatter.git
+[submodule "submodules/ChaosBuild.CodeFormatter.Tasks"]
+	path = submodules/ChaosBuild.CodeFormatter.Tasks
+	url = ../../ChaosFramework/ChaosBuild.CodeFormatter.Tasks.git
+[submodule "submodules/ChaosBuild.Solution"]
+	path = submodules/ChaosBuild.Solution
+	url = ../../ChaosFramework/ChaosBuild.Solution.git
+[submodule "submodules/ChaosBuild.Util"]
+	path = submodules/ChaosBuild.Util
+	url = ../../ChaosFramework/ChaosBuild.Util.git
