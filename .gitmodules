@@ -4,3 +4,15 @@
 [submodule "submodules/ChaosPresets.Targets"]
 	path = submodules/ChaosPresets.Targets
 	url = ../../ChaosFramework/ChaosPresets.Targets.git
+[submodule "submodules/ChaosAnalyzers"]
+	path = submodules/ChaosAnalyzers
+	url = ../../ChaosFramework/ChaosAnalyzers.git
+[submodule "submodules/ChaosAnalyzers.ClassIntegrity"]
+	path = submodules/ChaosAnalyzers.ClassIntegrity
+	url = ../../ChaosFramework/ChaosAnalyzers.ClassIntegrity.git
+[submodule "submodules/ChaosAnalyzers.ClassIntegrity.Types"]
+	path = submodules/ChaosAnalyzers.ClassIntegrity.Types
+	url = ../../ChaosFramework/ChaosAnalyzers.ClassIntegrity.Types.git
+[submodule "submodules/ChaosAnalyzers.CleanCode"]
+	path = submodules/ChaosAnalyzers.CleanCode
+	url = ../../ChaosFramework/ChaosAnalyzers.CleanCode.git
