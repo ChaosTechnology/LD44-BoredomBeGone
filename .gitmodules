@@ -28,3 +28,39 @@
 [submodule "submodules/ChaosBuild.Util"]
 	path = submodules/ChaosBuild.Util
 	url = ../../ChaosFramework/ChaosBuild.Util.git
+[submodule "submodules/ChaosFramework.Collections"]
+	path = submodules/ChaosFramework.Collections
+	url = ../../ChaosFramework/ChaosFramework.Collections.git
+[submodule "submodules/ChaosFramework.Components"]
+	path = submodules/ChaosFramework.Components
+	url = ../../ChaosFramework/ChaosFramework.Components.git
+[submodule "submodules/ChaosFramework.Core"]
+	path = submodules/ChaosFramework.Core
+	url = ../../ChaosFramework/ChaosFramework.Core.git
+[submodule "submodules/ChaosFramework.Graphics"]
+	path = submodules/ChaosFramework.Graphics
+	url = ../../ChaosFramework/ChaosFramework.Graphics.git
+[submodule "submodules/ChaosFramework.Graphics.OpenGL"]
+	path = submodules/ChaosFramework.Graphics.OpenGL
+	url = ../../ChaosFramework/ChaosFramework.Graphics.OpenGL.git
+[submodule "submodules/ChaosFramework.IO"]
+	path = submodules/ChaosFramework.IO
+	url = ../../ChaosFramework/ChaosFramework.IO.git
+[submodule "submodules/ChaosFramework.Math"]
+	path = submodules/ChaosFramework.Math
+	url = ../../ChaosFramework/ChaosFramework.Math.git
+[submodule "submodules/ChaosFramework.Physics"]
+	path = submodules/ChaosFramework.Physics
+	url = ../../ChaosFramework/ChaosFramework.Physics.git
+[submodule "submodules/ChaosFramework.Platform"]
+	path = submodules/ChaosFramework.Platform
+	url = ../../ChaosFramework/ChaosFramework.Platform.git
+[submodule "submodules/ChaosFramework.Shapes"]
+	path = submodules/ChaosFramework.Shapes
+	url = ../../ChaosFramework/ChaosFramework.Shapes.git
+[submodule "submodules/ChaosFramework.Sound"]
+	path = submodules/ChaosFramework.Sound
+	url = ../../ChaosFramework/ChaosFramework.Sound.git
+[submodule "submodules/ChaosFramework.Sound.OpenAL"]
+	path = submodules/ChaosFramework.Sound.OpenAL
+	url = ../../ChaosFramework/ChaosFramework.Sound.OpenAL.git
