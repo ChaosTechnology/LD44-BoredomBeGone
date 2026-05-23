@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Weapon_Mace" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Weapon_Mace.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Weapon_SteelStraightSword" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Weapon_SteelStraightSword.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Weapon_SteelWarHammer" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Weapon_SteelWarHammer.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Weapon_WoodenStraightSword" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Weapon_WoodenStraightSword.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Skill_Agility" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Skill_Agility.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Skill_Constitution" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Skill_Constitution.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Skill_Magic" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Skill_Magic.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Skill_Strength" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Skill_Strength.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Weapon_Bat" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\weapon_bat.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Descr_Dawnstar" xml:space="preserve">
+    <value>A mysterious blade.
+When touching it you can hear a faint voice in your head:
+"Motherfucker?"</value>
+  </data>
+  <data name="Descr_DwarvenWarHammer" xml:space="preserve">
+    <value>A heavy war hammer of finest dwarfen craftsmanship.
+Go smash some heads!</value>
+  </data>
+  <data name="Descr_BladeofCreation" xml:space="preserve">
+    <value>This cursed sword is said to kill everyone it slices instantly.
+The creators of this world themselves supposedly wielded this blade!
+And the best thing is: I'll give it to you for free.
+Try not to cut your finger though, or you might die.</value>
+  </data>
+  <data name="Descr_IronBat" xml:space="preserve">
+    <value>An iron baseball bat.
+Here's a free hint:
+If you look closely, you can see that your enemies' heads are basically floating balls.
+Why not try for a homerun?</value>
+  </data>
+  <data name="Descr_Mace" xml:space="preserve">
+    <value>Heavy and spiky.
+I wouldn't want to get hit by that.</value>
+  </data>
+  <data name="Descr_Morningstar" xml:space="preserve">
+    <value>My personal favorite!
+This cursed blade can only be wielded by high ranking demons such as myself.
+Why am I selling it to you?
+Because I'm certain you could not afford it anyways.</value>
+  </data>
+  <data name="Descr_OnyxBlade" xml:space="preserve">
+    <value>A truly remarkable sword.
+It cuts through bone like through warm butter.
+It can never be sheathed though, as there is no material that can hold this sword without being sliced.</value>
+  </data>
+  <data name="Descr_SteelStraightSword" xml:space="preserve">
+    <value>A normal steel sword.
+A suitable weapon for a weakling like you.</value>
+  </data>
+  <data name="Descr_SteelWarHammer" xml:space="preserve">
+    <value>A heavy war hammer.
+Requires quite some strength to be wielded effectively.</value>
+  </data>
+  <data name="Descr_WoodenBat" xml:space="preserve">
+    <value>A wooden baseball bat.
+Tool of choice for some rowdy delinquents.
+It could use some nails though.</value>
+  </data>
+  <data name="Descr_WoodenStraightSword" xml:space="preserve">
+    <value>A child's toy.
+Not suitable for combat.
+It still hurts quite a bit when hitting it in your face though.
+If you require proof, I'm always happy to break some noses!</value>
+  </data>
+</root>

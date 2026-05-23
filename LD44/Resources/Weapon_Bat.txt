@@ -1,0 +1,8 @@
+Handle
+	Blunt
+	0
+	false
+Head
+	Blunt
+	1
+	false

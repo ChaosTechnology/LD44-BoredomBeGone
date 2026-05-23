@@ -1,0 +1,3 @@
+Constitution refers to your damage resistance.
+
+Leveling constitution improves your physical damage resistance, your magic damage resistance and reduces your damage taken by casting spells.

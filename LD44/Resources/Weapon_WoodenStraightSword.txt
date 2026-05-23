@@ -1,0 +1,8 @@
+Blade
+	Blunt
+	0.8
+	false
+Tip
+	Pierce
+	1
+	false
