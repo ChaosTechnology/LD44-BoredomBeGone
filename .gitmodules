@@ -4,6 +4,24 @@
 [submodule "submodules/ChaosPresets.Targets"]
 	path = submodules/ChaosPresets.Targets
 	url = ../../ChaosFramework/ChaosPresets.Targets.git
+[submodule "submodules/ChaosUtil.Debug"]
+	path = submodules/ChaosUtil.Debug
+	url = ../../ChaosFramework/ChaosUtil.Debug.git
+[submodule "submodules/ChaosUtil.Platform"]
+	path = submodules/ChaosUtil.Platform
+	url = ../../ChaosFramework/ChaosUtil.Platform.git
+[submodule "submodules/ChaosUtil.Platform.Windows"]
+	path = submodules/ChaosUtil.Platform.Windows
+	url = ../../ChaosFramework/ChaosUtil.Platform.Windows.git
+[submodule "submodules/ChaosUtil.Primitives"]
+	path = submodules/ChaosUtil.Primitives
+	url = ../../ChaosFramework/ChaosUtil.Primitives.git
+[submodule "submodules/ChaosUtil.Reflection"]
+	path = submodules/ChaosUtil.Reflection
+	url = ../../ChaosFramework/ChaosUtil.Reflection.git
+[submodule "submodules/ChaosUtil.Serialization"]
+	path = submodules/ChaosUtil.Serialization
+	url = ../../ChaosFramework/ChaosUtil.Serialization.git
 [submodule "submodules/ChaosAnalyzers"]
 	path = submodules/ChaosAnalyzers
 	url = ../../ChaosFramework/ChaosAnalyzers.git
