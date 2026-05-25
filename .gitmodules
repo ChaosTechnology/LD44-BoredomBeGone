@@ -1,0 +1,84 @@
+[submodule "submodules/ChaosPresets.References"]
+	path = submodules/ChaosPresets.References
+	url = ../../ChaosFramework/ChaosPresets.References.git
+[submodule "submodules/ChaosPresets.Targets"]
+	path = submodules/ChaosPresets.Targets
+	url = ../../ChaosFramework/ChaosPresets.Targets.git
+[submodule "submodules/ChaosUtil.Debug"]
+	path = submodules/ChaosUtil.Debug
+	url = ../../ChaosFramework/ChaosUtil.Debug.git
+[submodule "submodules/ChaosUtil.Platform"]
+	path = submodules/ChaosUtil.Platform
+	url = ../../ChaosFramework/ChaosUtil.Platform.git
+[submodule "submodules/ChaosUtil.Platform.Windows"]
+	path = submodules/ChaosUtil.Platform.Windows
+	url = ../../ChaosFramework/ChaosUtil.Platform.Windows.git
+[submodule "submodules/ChaosUtil.Primitives"]
+	path = submodules/ChaosUtil.Primitives
+	url = ../../ChaosFramework/ChaosUtil.Primitives.git
+[submodule "submodules/ChaosUtil.Reflection"]
+	path = submodules/ChaosUtil.Reflection
+	url = ../../ChaosFramework/ChaosUtil.Reflection.git
+[submodule "submodules/ChaosUtil.Serialization"]
+	path = submodules/ChaosUtil.Serialization
+	url = ../../ChaosFramework/ChaosUtil.Serialization.git
+[submodule "submodules/ChaosAnalyzers"]
+	path = submodules/ChaosAnalyzers
+	url = ../../ChaosFramework/ChaosAnalyzers.git
+[submodule "submodules/ChaosAnalyzers.ClassIntegrity"]
+	path = submodules/ChaosAnalyzers.ClassIntegrity
+	url = ../../ChaosFramework/ChaosAnalyzers.ClassIntegrity.git
+[submodule "submodules/ChaosAnalyzers.ClassIntegrity.Types"]
+	path = submodules/ChaosAnalyzers.ClassIntegrity.Types
+	url = ../../ChaosFramework/ChaosAnalyzers.ClassIntegrity.Types.git
+[submodule "submodules/ChaosAnalyzers.CleanCode"]
+	path = submodules/ChaosAnalyzers.CleanCode
+	url = ../../ChaosFramework/ChaosAnalyzers.CleanCode.git
+[submodule "submodules/ChaosBuild.CodeFormatter"]
+	path = submodules/ChaosBuild.CodeFormatter
+	url = ../../ChaosFramework/ChaosBuild.CodeFormatter.git
+[submodule "submodules/ChaosBuild.CodeFormatter.Tasks"]
+	path = submodules/ChaosBuild.CodeFormatter.Tasks
+	url = ../../ChaosFramework/ChaosBuild.CodeFormatter.Tasks.git
+[submodule "submodules/ChaosBuild.Solution"]
+	path = submodules/ChaosBuild.Solution
+	url = ../../ChaosFramework/ChaosBuild.Solution.git
+[submodule "submodules/ChaosBuild.Util"]
+	path = submodules/ChaosBuild.Util
+	url = ../../ChaosFramework/ChaosBuild.Util.git
+[submodule "submodules/ChaosFramework.Collections"]
+	path = submodules/ChaosFramework.Collections
+	url = ../../ChaosFramework/ChaosFramework.Collections.git
+[submodule "submodules/ChaosFramework.Components"]
+	path = submodules/ChaosFramework.Components
+	url = ../../ChaosFramework/ChaosFramework.Components.git
+[submodule "submodules/ChaosFramework.Core"]
+	path = submodules/ChaosFramework.Core
+	url = ../../ChaosFramework/ChaosFramework.Core.git
+[submodule "submodules/ChaosFramework.Graphics"]
+	path = submodules/ChaosFramework.Graphics
+	url = ../../ChaosFramework/ChaosFramework.Graphics.git
+[submodule "submodules/ChaosFramework.Graphics.OpenGL"]
+	path = submodules/ChaosFramework.Graphics.OpenGL
+	url = ../../ChaosFramework/ChaosFramework.Graphics.OpenGL.git
+[submodule "submodules/ChaosFramework.IO"]
+	path = submodules/ChaosFramework.IO
+	url = ../../ChaosFramework/ChaosFramework.IO.git
+[submodule "submodules/ChaosFramework.Math"]
+	path = submodules/ChaosFramework.Math
+	url = ../../ChaosFramework/ChaosFramework.Math.git
+[submodule "submodules/ChaosFramework.Physics"]
+	path = submodules/ChaosFramework.Physics
+	url = ../../ChaosFramework/ChaosFramework.Physics.git
+[submodule "submodules/ChaosFramework.Platform"]
+	path = submodules/ChaosFramework.Platform
+	url = ../../ChaosFramework/ChaosFramework.Platform.git
+[submodule "submodules/ChaosFramework.Shapes"]
+	path = submodules/ChaosFramework.Shapes
+	url = ../../ChaosFramework/ChaosFramework.Shapes.git
+[submodule "submodules/ChaosFramework.Sound"]
+	path = submodules/ChaosFramework.Sound
+	url = ../../ChaosFramework/ChaosFramework.Sound.git
+[submodule "submodules/ChaosFramework.Sound.OpenAL"]
+	path = submodules/ChaosFramework.Sound.OpenAL
+	url = ../../ChaosFramework/ChaosFramework.Sound.OpenAL.git

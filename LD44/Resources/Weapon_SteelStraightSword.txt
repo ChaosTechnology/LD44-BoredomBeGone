@@ -1,0 +1,8 @@
+Blade
+	Strike
+	0.8
+	true
+Tip
+	Pierce
+	1
+	true

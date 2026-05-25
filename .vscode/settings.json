@@ -1,0 +1,8 @@
+{
+    "terminal.integrated.env.linux": {
+        "SolutionDir": "${workspaceFolder}/"
+    },
+    "terminal.integrated.env.windows": {
+        "SolutionDir": "${workspaceFolder}/"
+    }
+}

@@ -1,0 +1,8 @@
+Handle
+	Blunt
+	0.15
+	false
+Ball
+	Pierce
+	1
+	true
