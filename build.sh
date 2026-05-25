@@ -7,5 +7,5 @@ set -euo pipefail
 SolutionDir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")/"
 cd "$SolutionDir"
 
-dotnet build "ChaosBuild.sln"
-dotnet build "LD44.sln"
+dotnet build "./ChaosBuild.sln"
+dotnet build "./LD44.sln"
