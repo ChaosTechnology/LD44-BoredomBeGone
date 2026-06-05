@@ -1,3 +1,4 @@
+#if OS_WINDOWS
 using ChaosFramework.Components;
 using ChaosFramework.Platform;
 using OpenTK.GLControl;
@@ -48,3 +49,4 @@ namespace LD44
             => Terminate?.Invoke();
     }
 }
+#endif
