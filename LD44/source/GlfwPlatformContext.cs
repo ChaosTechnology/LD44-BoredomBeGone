@@ -27,7 +27,8 @@ namespace LD44
             int PrimaryWindow.height => 600;
         }
 
-        public bool terminationRequested { get; private set; }
+        public event Action Terminate;
+        bool terminated = false;
 
         public WindowsPrimaryWindow primaryWindow => WindowsPrimaryWindow.instance;
         PrimaryWindow PlatformContext.primaryWindow => primaryWindow;
@@ -45,7 +46,13 @@ namespace LD44
         void MessageQueue.ProcessMessages()
         {
             GLFW.PollEvents();
-            terminationRequested |= GLFW.WindowShouldClose(primaryWindow.window);
+
+            if (GLFW.WindowShouldClose(primaryWindow.window) && !terminated)
+            {
+                terminated = true;
+                Terminate?.Invoke();
+                return;
+            }
 
             foreach (var key in Enum.GetValues<Keys>())
                 keyboard.isDown[key] = GLFW.GetKey(primaryWindow.window, key) == InputAction.Press;

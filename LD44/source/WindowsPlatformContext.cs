@@ -1,6 +1,7 @@
 using ChaosFramework.Components;
 using ChaosFramework.Platform;
 using OpenTK.GLControl;
+using System;
 using System.Windows.Forms;
 
 namespace LD44
@@ -16,6 +17,9 @@ namespace LD44
         }
 
         PrimaryWindow PlatformContext.primaryWindow { get; } = new WindowsWindow(window);
+
+        public event Action Terminate;
+
         GLControl control;
 
         void MessageQueue.ProcessMessages()
@@ -26,6 +30,8 @@ namespace LD44
         void PlatformContext.Setup()
         {
             window.Show();
+            window.FormClosing += RaiseTerminate;
+
             control = new GLControl();
             control.Bounds = window.ClientRectangle;
             control.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom;
@@ -37,5 +43,8 @@ namespace LD44
         {
             control.SwapBuffers();
         }
+
+        void RaiseTerminate(object _, EventArgs __)
+            => Terminate?.Invoke();
     }
 }

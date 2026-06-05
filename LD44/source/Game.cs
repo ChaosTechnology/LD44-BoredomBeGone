@@ -69,6 +69,7 @@ namespace LD44
             : base((MessageQueue)platformContext) // TODO: merge MessageQueue interface into PlatformContext
         {
             this.platformContext = platformContext;
+            platformContext.Terminate += Terminate;
         }
 
         public override void LoadGame()
@@ -127,6 +128,7 @@ namespace LD44
         protected override void DoDispose()
         {
             base.DoDispose();
+            platformContext.Terminate -= Terminate;
             textures?.Dispose();
             materials?.Dispose();
             meshes?.Dispose();
