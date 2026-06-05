@@ -6,6 +6,7 @@
     <AssemblyName>Boredom Be Gone</AssemblyName>
     <RootNamespace>LD44</RootNamespace>
     <ProjectGuid>{38362ABA-E942-498F-A126-388DEF1A8E78}</ProjectGuid>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <!-- Properties -->

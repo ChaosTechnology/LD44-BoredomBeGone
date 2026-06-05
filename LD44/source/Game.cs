@@ -33,8 +33,11 @@ namespace LD44
             }
         }
 
-        public readonly LD44Mouse mouse = new LD44Mouse();
-        public readonly LD44Keyboard keyboard = new LD44Keyboard();
+        public static readonly LD44Mouse _mouse = new LD44Mouse();
+        public static readonly LD44Keyboard _keyboard = new LD44Keyboard();
+
+        public readonly LD44Mouse mouse = _mouse;
+        public readonly LD44Keyboard keyboard = _keyboard;
 
         public static readonly StreamSource assetSource = new CachedFileStreamSource(new System.IO.DirectoryInfo("Assets/"));
 

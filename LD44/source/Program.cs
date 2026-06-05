@@ -44,7 +44,7 @@ namespace LD44
             window.BackgroundImageLayout = ImageLayout.Stretch;
             window.BackgroundImage = new System.Drawing.Bitmap("Assets/LoadingScreen.png");
 
-            Game g = new Game(new WindowsPlatformContext(window));
+            Game g = new Game(new GlfwPlatformContext(Game._keyboard, Game._mouse));
             g.settings = settings;
             g.Run();
         }
