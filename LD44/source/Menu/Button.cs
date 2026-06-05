@@ -12,6 +12,7 @@ namespace LD44.Menu
         TextureContainer.Entry hoverTexture;
         bool isHovered = false;
         bool isDown = false;
+        Game.LD44Mouse mouse => scene.game.mouse;
 
         protected override void Create(CreateParameters cparams)
         {
@@ -33,14 +34,14 @@ namespace LD44.Menu
             txtCol = isHovered ? new Rgba(0.75f, 0, 0, 1) : Rgba.OPAQUE_WHITE;
             if (enabled && isHovered)
             {
-                if (!isDown && scene.game.mouse.LeftButton == OpenTK.Input.ButtonState.Pressed)
+                if (!isDown && mouse.leftButton)
                     isDown = true;
-                else if (isDown && scene.game.mouse.LeftButton == OpenTK.Input.ButtonState.Released)
+                else if (isDown && mouse.leftButton)
                 {
                     click?.Invoke();
                     isDown = false;
                 }
-                else if (scene.game.mouse.LeftButton == OpenTK.Input.ButtonState.Released)
+                else if (mouse.leftButton)
                     isDown = false;
             }
             else

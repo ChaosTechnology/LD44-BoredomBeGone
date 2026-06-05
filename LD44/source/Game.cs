@@ -9,8 +9,13 @@ using ChaosFramework.Sound;
 using ChaosFramework.Sound.OpenAL;
 using ChaosUtil.Primitives;
 using ChaosUtil.Serialization.Text;
-using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
+using ChaosFramework.Platform;
+using OpenTK.Graphics;
+using OpenTK.Platform;
+using System;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using System.Collections.Generic;
 
 namespace LD44
 {
@@ -24,7 +29,25 @@ namespace LD44
             }
         }
 
-        public static readonly StreamSource assetSource = new FileStreamSource(new System.IO.DirectoryInfo("Assets"));
+        public class LD44Mouse
+        {
+            public bool rightButton, leftButton;
+            public float X, Y, WheelPrecise;
+        }
+
+        public class LD44Keyboard
+        {
+            public Dictionary<OpenTK.Windowing.GraphicsLibraryFramework.Keys, bool> isDown = new();
+            public bool IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys keys)
+            {
+                return isDown.GetValueOrDefault(keys, false);
+            }
+        }
+
+        public readonly LD44Mouse mouse = new LD44Mouse();
+        public readonly LD44Keyboard keyboard = new LD44Keyboard();
+
+        public static readonly StreamSource assetSource = new CachedFileStreamSource(new System.IO.DirectoryInfo("Assets/"));
 
         internal static void PrepareIO()
             =>  Parse.AddParser<Vector2i>(Parsers.ParseVector2i);
@@ -45,9 +68,6 @@ namespace LD44
         Music music;
 
         bool preventRedrawOnResize = false;
-
-        public OpenTK.Input.KeyboardState keyboard;
-        public OpenTK.Input.MouseState mouse;
 
         public readonly MessageQueue messageQueue;
         public readonly Form window;
@@ -91,9 +111,6 @@ namespace LD44
 
         protected override void Update()
         {
-            keyboard = OpenTK.Input.Keyboard.GetState();
-            mouse = OpenTK.Input.Mouse.GetState();
-
             bool toggleFullScreen = keyboard.IsKeyDown(OpenTK.Input.Key.F11);
             if (toggleFullScreen && !lockF11)
             {
@@ -112,7 +129,7 @@ namespace LD44
 
         protected override void Draw()
         {
-            GL.ClearColor(new OpenTK.Graphics.Color4(0, (byte)Random.instance.RndInt(255), 0, 255));
+            GL.ClearColor(0, (byte)ChaosUtil.Primitives.Random.instance.RndInt(255), 0, 255);
             Graphics.ThrowErrors();
             GL.Clear(ClearBufferMask.ColorBufferBit);
             Graphics.ThrowErrors();

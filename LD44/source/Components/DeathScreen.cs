@@ -43,16 +43,16 @@ namespace LD44.Components
 
         void ConsiderSuicide()
         {
-            if (scene.game.keyboard.IsKeyDown(OpenTK.Input.Key.BackSpace))
+            if (scene.game.keyboard.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.Backspace))
             {
                 // what were we thinking?
                 scene.Dispose();
-                GL.ClearColor(new OpenTK.Graphics.Color4(0, 0, 0, 0));
+                GL.ClearColor(0, 0, 0, 0);
                 ChaosFramework.Graphics.OpenGl.Graphics.ThrowErrors();
                 GL.Clear(ClearBufferMask.ColorBufferBit);
                 ChaosFramework.Graphics.OpenGl.Graphics.ThrowErrors();
                 DrawLoadingScreen();
-                scene.game.graphics.graphicsContext.SwapBuffers();
+                scene.game.platformContext.Present();
                 scene.game.scenes.Add(new WorldScene(scene.game));
                 Dispose();
                 return;

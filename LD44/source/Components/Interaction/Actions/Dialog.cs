@@ -94,7 +94,7 @@ namespace LD44.Components.Interaction.Actions
 
         void Interact()
         {
-            if (scene.game.keyboard.IsKeyDown(OpenTK.Input.Key.F))
+            if (scene.game.keyboard.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F))
             {
                 if (!lockF)
                     currentText++;

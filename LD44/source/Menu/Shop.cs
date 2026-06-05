@@ -37,6 +37,7 @@ namespace LD44.Menu
         public Shader cursorShader;
         TextureContainer.Entry cursorTex;
 
+        Game.LD44Mouse mouse => this.game.mouse;
         public Vector3f mousePosition, mouseDelta;
         Vector3f oldMouseData;
 
@@ -45,8 +46,6 @@ namespace LD44.Menu
         Control<Shop> lblDescription;
         System.Action onClose;
         byte menuMode;
-
-        public OpenTK.Input.MouseState mouse => game.mouse;
 
         public Shop(Game game)
             : base(game, typeof(UpdateLayers), typeof(DrawLayers))
