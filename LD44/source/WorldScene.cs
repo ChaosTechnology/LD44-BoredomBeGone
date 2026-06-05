@@ -94,8 +94,8 @@ namespace LD44
                     base.game.graphics,
                     view,
                     new Vector2i(
-                        (base.game.settings.deferredShaderSize.x <= 0) ? base.game.window.Width : base.game.settings.deferredShaderSize.x,
-                        (base.game.settings.deferredShaderSize.y <= 0) ? base.game.window.Height : base.game.settings.deferredShaderSize.y
+                        (game.settings.deferredShaderSize.x <= 0) ? game.platformContext.primaryWindow.width : game.settings.deferredShaderSize.x,
+                        (game.settings.deferredShaderSize.y <= 0) ? game.platformContext.primaryWindow.height : game.settings.deferredShaderSize.y
                         ),
                     lights = new LightSet(),
                     new DeferredShaderIntrinsicLights[] { new DirectionalLightIntrinsics(1) },
@@ -294,7 +294,7 @@ namespace LD44
 
         void PrepareSky()
         {
-            GL.Viewport(0, game.window.Height - game.window.ClientSize.Height, game.window.ClientSize.Width, game.window.ClientSize.Height);
+            GL.Viewport(0, 0, game.platformContext.primaryWindow.width, game.platformContext.primaryWindow.height);
             Graphics.ThrowErrors();
             game.graphics.stateTracker.BindFramebuffer(FramebufferTarget.Framebuffer, null);
         }
@@ -304,7 +304,7 @@ namespace LD44
 
         void Present()
         {
-            GL.Viewport(0, game.window.Height - game.window.ClientSize.Height, game.window.ClientSize.Width, game.window.ClientSize.Height);
+            GL.Viewport(0, 0, game.platformContext.primaryWindow.width, game.platformContext.primaryWindow.height);
             Graphics.ThrowErrors();
             game.graphics.stateTracker.BindFramebuffer(FramebufferTarget.Framebuffer, null);
             antiEdger.normalFactor = 6f;

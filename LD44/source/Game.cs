@@ -10,7 +10,6 @@ using ChaosFramework.Sound;
 using ChaosFramework.Sound.OpenAL;
 using ChaosUtil.Primitives;
 using ChaosUtil.Serialization.Text;
-using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
@@ -59,27 +58,20 @@ namespace LD44
 
         bool preventRedrawOnResize = false;
 
-        public readonly MessageQueue messageQueue;
         public readonly PlatformContext platformContext;
-        public readonly Form window;
 
         bool lockF11;
 
-        public Game(WindowsPlatformContext messageQueue, Form window)
-            : base(messageQueue)
+        public Game(PlatformContext platformContext)
+            : base((MessageQueue)platformContext) // TODO: merge MessageQueue interface into PlatformContext
         {
-            this.messageQueue = messageQueue;
-            this.platformContext = messageQueue;
-            this.window = window;
-            System.Windows.Forms.Cursor.Hide();
-            window.Cursor.Dispose();
-            window.FormClosing += Terminate;
+            this.platformContext = platformContext;
         }
 
         public override void LoadGame()
         {
             base.LoadGame();
-            gameLoop = new ChaosFramework.Components.GameLoop.CappedVariableTimeLoop(messageQueue, settings.maxFPS);
+            gameLoop = new ChaosFramework.Components.GameLoop.CappedVariableTimeLoop((MessageQueue)platformContext, settings.maxFPS);
 
             audio = new Audio();
             samples = new SoundDataContainer(assetSource, false);
@@ -97,8 +89,8 @@ namespace LD44
             (shapes = new ShapeContainer(assetSource)).LoadDirectory("Models", new[] { ".obj" }, true, this);
             scenes.Add(new WorldScene(this));
 
-            window.BackgroundImage.Dispose();
-            window.BackgroundImage = null;
+            // window.BackgroundImage.Dispose();
+            // window.BackgroundImage = null;
         }
 
         protected override void Update()
@@ -114,9 +106,9 @@ namespace LD44
 
             base.Update();
 
-            if (state == State.Running)
-                if (ChaosUtil.Platform.Windows.WinAPI.winuser.GetActiveWindow.Invoke() == window.Handle)
-                    System.Windows.Forms.Cursor.Position = new System.Drawing.Point(window.Location.X + window.Width / 2, window.Location.Y + window.Height / 2);
+            // if (state == State.Running)
+            //     if (ChaosUtil.Platform.Windows.WinAPI.winuser.GetActiveWindow.Invoke() == window.Handle)
+            //         System.Windows.Forms.Cursor.Position = new System.Drawing.Point(window.Location.X + window.Width / 2, window.Location.Y + window.Height / 2);
         }
 
         protected override void Draw()
@@ -129,12 +121,8 @@ namespace LD44
             platformContext.Present();
         }
 
-        void Terminate(object _, System.Windows.Forms.FormClosingEventArgs __)
-            => Terminate();
-
         protected override void DoDispose()
         {
-            window.FormClosing -= Terminate;
             base.DoDispose();
             textures?.Dispose();
             materials?.Dispose();

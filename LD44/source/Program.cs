@@ -29,23 +29,23 @@ namespace LD44
             Application.SetCompatibleTextRenderingDefault(false);
             Game.PrepareIO();
 
-            Form form = new Form();
-            Game g = new Game(new WindowsPlatformContext(form), form);
-
             bool hadSettings = System.IO.File.Exists(Settings.FILE);
-            g.settings = hadSettings
+            Settings settings = hadSettings
                 ? Settings.Load(Settings.FILE)
                 : new Settings();
             if (!hadSettings)
-                g.settings.Save(Settings.FILE);
+                settings.Save(Settings.FILE);
 
-            g.window.Icon = Properties.Resources.icon;
-            g.window.Text = "Boredom Be Gone";
-            g.window.MinimumSize = new System.Drawing.Size(800, 450);
-            g.window.Size = new System.Drawing.Size(g.settings.deferredShaderSize.x, g.settings.deferredShaderSize.y);
-            g.window.BackgroundImageLayout = ImageLayout.Stretch;
-            g.window.BackgroundImage = new System.Drawing.Bitmap("Assets/LoadingScreen.png");
-            g.window.Show();
+            Form window = new Form();
+            window.Icon = Properties.Resources.icon;
+            window.Text = "Boredom Be Gone";
+            window.MinimumSize = new System.Drawing.Size(800, 450);
+            window.Size = new System.Drawing.Size(settings.deferredShaderSize.x, settings.deferredShaderSize.y);
+            window.BackgroundImageLayout = ImageLayout.Stretch;
+            window.BackgroundImage = new System.Drawing.Bitmap("Assets/LoadingScreen.png");
+
+            Game g = new Game(new WindowsPlatformContext(window));
+            g.settings = settings;
             g.Run();
         }
     }
