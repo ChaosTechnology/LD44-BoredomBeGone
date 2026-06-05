@@ -5,30 +5,20 @@ using ChaosFramework.IO.Streams;
 using ChaosFramework.IO.Streams.Sources;
 using ChaosFramework.Math.Vectors;
 using ChaosFramework.Physics;
+using ChaosFramework.Platform;
 using ChaosFramework.Sound;
 using ChaosFramework.Sound.OpenAL;
 using ChaosUtil.Primitives;
 using ChaosUtil.Serialization.Text;
+using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
-using ChaosFramework.Platform;
-using OpenTK.Graphics;
-using OpenTK.Platform;
 using System;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Collections.Generic;
 
 namespace LD44
 {
     public class Game : BaseGame
     {
-        public class WindowsMessageQueue : MessageQueue
-        {
-            void MessageQueue.ProcessMessages()
-            {
-                Application.DoEvents();
-            }
-        }
-
         public class LD44Mouse
         {
             public bool rightButton, leftButton;
@@ -70,14 +60,16 @@ namespace LD44
         bool preventRedrawOnResize = false;
 
         public readonly MessageQueue messageQueue;
+        public readonly PlatformContext platformContext;
         public readonly Form window;
 
         bool lockF11;
 
-        public Game(WindowsMessageQueue messageQueue, Form window)
+        public Game(WindowsPlatformContext messageQueue, Form window)
             : base(messageQueue)
         {
             this.messageQueue = messageQueue;
+            this.platformContext = messageQueue;
             this.window = window;
             System.Windows.Forms.Cursor.Hide();
             window.Cursor.Dispose();
@@ -94,15 +86,15 @@ namespace LD44
             music = new Music(audio, assetSource.OpenRead("Music/music.ogg"));
             music.PlayLoop(1);
 
-            graphics = new Graphics(window, 3, 3);
-            (fonts = new FontContainer(assetSource, graphics, false)).LoadDirectory("Fonts", new[] { ".chf2" }, true, null);
-            (textures = new TextureContainer(assetSource, graphics.dispatcher, false)).LoadDirectory("Textures", new[] { ".png" }, true, null);
-            (materials = new MaterialContainer(assetSource, graphics, textures, false)).LoadDirectory("Materials", new[] { ".mat" }, true, null);
-            (meshes = new MeshContainer(assetSource, graphics.dispatcher, false)).LoadDirectory("Models", new[] { ".gmdl" }, true, null);
-            (shaderCode = new ShaderCodeContainer(new StreamSourceCollection(StreamSources.shaderCode, assetSource))).LoadDirectory("Shaders", new[] { ".fx" }, true, null);
-            (shaders = new ShaderContainer(assetSource, graphics, shaderCode)).LoadDirectory("Shaders", new[] { ".fx" }, true, null);
-            (animations = new AnimationContainer(assetSource, false)).LoadDirectory("Animations", new[] { ".anim" }, true, null);
-            (shapes = new ShapeContainer(assetSource)).LoadDirectory("Models", new[] { ".obj" }, true, null);
+            graphics = new Graphics(platformContext, 3, 3);
+            (fonts = new FontContainer(assetSource, graphics, false)).LoadDirectory("Fonts", new[] { ".chf2" }, true, this);
+            (textures = new TextureContainer(assetSource, graphics.dispatcher, false)).LoadDirectory("Textures", new[] { ".png" }, true, this);
+            (materials = new MaterialContainer(assetSource, graphics, textures, false)).LoadDirectory("Materials", new[] { ".mat" }, true, this);
+            (meshes = new MeshContainer(assetSource, graphics.dispatcher, false)).LoadDirectory("Models", new[] { ".gmdl" }, true, this);
+            (shaderCode = new ShaderCodeContainer(new StreamSourceCollection(StreamSources.shaderCode, assetSource))).LoadDirectory("Shaders", new[] { ".fx" }, true, this);
+            (shaders = new ShaderContainer(assetSource, graphics, shaderCode)).LoadDirectory("Shaders", new[] { ".fx" }, true, this);
+            (animations = new AnimationContainer(assetSource, false)).LoadDirectory("Animations", new[] { ".anim" }, true, this);
+            (shapes = new ShapeContainer(assetSource)).LoadDirectory("Models", new[] { ".obj" }, true, this);
             scenes.Add(new WorldScene(this));
 
             window.BackgroundImage.Dispose();
@@ -111,11 +103,11 @@ namespace LD44
 
         protected override void Update()
         {
-            bool toggleFullScreen = keyboard.IsKeyDown(OpenTK.Input.Key.F11);
+            bool toggleFullScreen = keyboard.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F11);
             if (toggleFullScreen && !lockF11)
             {
                 preventRedrawOnResize = true;
-                graphics.SetFullScreen(!graphics.fullscreen, new Vector2i(settings.deferredShaderSize.x, settings.deferredShaderSize.y));
+                // graphics.SetFullScreen(!graphics.fullscreen, new Vector2i(settings.deferredShaderSize.x, settings.deferredShaderSize.y));
                 preventRedrawOnResize = false;
             }
             lockF11 = toggleFullScreen;
@@ -134,7 +126,7 @@ namespace LD44
             GL.Clear(ClearBufferMask.ColorBufferBit);
             Graphics.ThrowErrors();
             base.Draw();
-            graphics.graphicsContext.SwapBuffers();
+            platformContext.Present();
         }
 
         void Terminate(object _, System.Windows.Forms.FormClosingEventArgs __)

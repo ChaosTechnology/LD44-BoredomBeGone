@@ -29,7 +29,8 @@ namespace LD44
             Application.SetCompatibleTextRenderingDefault(false);
             Game.PrepareIO();
 
-            Game g = new Game(new Game.WindowsMessageQueue(), new Form());
+            Form form = new Form();
+            Game g = new Game(new WindowsPlatformContext(form), form);
 
             bool hadSettings = System.IO.File.Exists(Settings.FILE);
             g.settings = hadSettings
