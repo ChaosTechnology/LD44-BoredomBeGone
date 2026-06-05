@@ -20,14 +20,14 @@ namespace LD44.Components.Map
 
         protected override void Create(CreateParameters cparams)
         {
-            mesh = scene.game.meshes.Load("Models/BORDER.gmdl", this);
+            mesh = scene.game.meshes.Load("Models/Border.gmdl", this);
             obelisk = scene.game.meshes.Load("Models/Obelisk.gmdl", this);
 
             physics = new Physical(this);
             physics.shapes.Clear();
             physics.isStatic = true;
             physics.state.baseTransform = Matrix.Scaling(1, 1.666f, 1);
-            physics.shapes.Add(scene.game.shapes.Load("Models/BORDER.obj", this).content);
+            physics.shapes.Add(scene.game.shapes.Load("Models/Border.obj", this).content);
             physics.shapes.Add(scene.game.shapes.Load("Models/Obelisk.obj", this).content);
             physics.state.position = new Vector3f(0, -HeightMap.mapHeight + 12, 0);
             scene.physics.Add(physics);

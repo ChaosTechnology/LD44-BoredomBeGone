@@ -41,7 +41,7 @@ namespace LD44.Components.Map
             LinkedList<Vector3f> branchOrigins = BranchOrigins(mesh.content.data);
             MeshShape collisionBase = new MeshShape(mesh.content.data.pos.ToArray(), true);
 
-            using (System.IO.Stream str = Game.assetSource.OpenRead("textures/map/mapBounds.png"))
+            using (System.IO.Stream str = Game.assetSource.OpenRead("Textures/Map/MapBounds.png"))
             using (System.Drawing.Bitmap bm = new System.Drawing.Bitmap(str))
             {
                 byte[] data = BitmapUtils.GetBitmapBytes(bm);

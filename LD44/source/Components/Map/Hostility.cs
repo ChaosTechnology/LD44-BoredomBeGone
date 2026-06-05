@@ -24,8 +24,8 @@ namespace LD44.Components.Map
 
         protected override void Create(CreateParameters cparams)
         {
-            using (System.Drawing.Bitmap chanceMap = new System.Drawing.Bitmap(Game.assetSource.OpenRead("textures/map/foeLoc.png")))
-            using (System.Drawing.Bitmap statMap = new System.Drawing.Bitmap(Game.assetSource.OpenRead("textures/map/foeStat.png")))
+            using (System.Drawing.Bitmap chanceMap = new System.Drawing.Bitmap(Game.assetSource.OpenRead("Textures/Map/FoeLoc.png")))
+            using (System.Drawing.Bitmap statMap = new System.Drawing.Bitmap(Game.assetSource.OpenRead("Textures/Map/FoeStat.png")))
             {
                 byte[] chance = BitmapUtils.GetBitmapBytes(chanceMap);
                 byte[] stats = BitmapUtils.GetBitmapBytes(statMap);

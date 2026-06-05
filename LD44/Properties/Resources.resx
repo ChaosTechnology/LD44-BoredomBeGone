@@ -87,7 +87,7 @@
     <value>..\Resources\Skill_Strength.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="Weapon_Bat" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\weapon_bat.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\Resources\Weapon_Bat.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="Descr_Dawnstar" xml:space="preserve">
     <value>A mysterious blade.

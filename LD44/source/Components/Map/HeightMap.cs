@@ -124,7 +124,7 @@ namespace LD44.Components.Map
                     currentShape.Update(transform, true);
                     currentShape.epaSupportFunction = searchDirection => EpaCellSupport(searchDirection, currentShape);
                 }
-            shader = scene.game.shaders.Load("shaders/map.fx", this);
+            shader = scene.game.shaders.Load("Shaders/Map.fx", this);
             mesh = mapData.CreateMesh(scene.game.graphics);
         }
 
