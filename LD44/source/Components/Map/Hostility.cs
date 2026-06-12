@@ -1,16 +1,16 @@
 using ChaosFramework.Collections;
-using ChaosFramework.Collections.Immutable;
 using ChaosFramework.Components;
-using ChaosFramework.Graphics;
+using ChaosFramework.Graphics.Imaging;
+using ChaosFramework.Graphics.Imaging.Formats;
 using ChaosFramework.Math.Vectors;
 using ChaosUtil.Primitives;
-using ChaosUtil.Reflection;
 using static ChaosFramework.Math.Exponentials;
 using static ChaosFramework.Math.Signs;
 using System.Linq;
 
 namespace LD44.Components.Map
 {
+
     using Weapons;
 
     public class Hostility : Component<WorldScene>
@@ -24,63 +24,63 @@ namespace LD44.Components.Map
 
         protected override void Create(CreateParameters cparams)
         {
-            using (System.Drawing.Bitmap chanceMap = new System.Drawing.Bitmap(Game.assetSource.OpenRead("Textures/Map/FoeLoc.png")))
-            using (System.Drawing.Bitmap statMap = new System.Drawing.Bitmap(Game.assetSource.OpenRead("Textures/Map/FoeStat.png")))
+            Rgba8Image chanceMap = Png.FromStream(Game.assetSource.OpenRead("Textures/Map/FoeLoc.png"));
+            Rgba8Image statMap = Png.FromStream(Game.assetSource.OpenRead("Textures/Map/FoeStat.png"));
+
+            uint width = statMap.w;
+            uint height = statMap.h;
+
+            int numSuccessfulSpawns = 0;
+            while (numSuccessfulSpawns < NUM_ENEMIES)
             {
-                byte[] chance = BitmapUtils.GetBitmapBytes(chanceMap);
-                byte[] stats = BitmapUtils.GetBitmapBytes(statMap);
-                int width = statMap.Width;
-                int height = statMap.Height;
+                Vector2f rnd = new Vector2f(Random.instance.Rnd(1), Random.instance.Rnd(1));
+                uint x = (uint)(rnd.x * width);
+                uint y = (uint)(rnd.y * height);
 
-                int numSuccessfulSpawns = 0;
-                while (numSuccessfulSpawns < NUM_ENEMIES)
-                {
-                    Vector2f rnd = new Vector2f(Random.instance.Rnd(1), Random.instance.Rnd(1));
-                    int pixel = (int)(width * rnd.x) + width * (int)(rnd.y * height);
+                Rgba8 chance = chanceMap[x, y];
+                byte probability = chance.g;
+                if (Random.instance.RndByte() > probability)
+                    continue;
 
-                    byte probability = chance[4 * pixel + 1];
-                    if (Random.instance.RndByte() > probability)
-                        continue;
+                Vector3f pos = new Vector3f(HeightMap.MAP_SIZE * (rnd.x - 0.5f), 0, HeightMap.MAP_SIZE * (0.5f - rnd.y));
+                if (Abs(pos.x - scene.satan.position.x) < WorldScene.SATANS_SAFESPACE ||
+                    Abs(pos.z - scene.satan.position.y) < WorldScene.SATANS_SAFESPACE)
+                    continue;
 
-                    Vector3f pos = new Vector3f(HeightMap.MAP_SIZE * (rnd.x - 0.5f), 0, HeightMap.MAP_SIZE * (0.5f - rnd.y));
-                    if (Abs(pos.x - scene.satan.position.x) < WorldScene.SATANS_SAFESPACE ||
-                        Abs(pos.z - scene.satan.position.y) < WorldScene.SATANS_SAFESPACE)
-                        continue;
+                byte vit = probability;
+                byte str = chance.r;
+                Rgba8 stats = statMap[x, y];
+                byte dex = stats.b;
+                byte mag = stats.g;
+                byte con = stats.r;
 
-                    byte vit = chance[4 * pixel + 1];
-                    byte str = chance[4 * pixel + 2];
-                    byte dex = stats[4 * pixel + 0];
-                    byte mag = stats[4 * pixel + 1];
-                    byte con = stats[4 * pixel + 2];
+                numSuccessfulSpawns++;
+                Characters.StickMan villain = scene.AddComponent<Characters.StickMan>();
+                new Characters.Brains.Enemy().TakeControl(villain);
+                villain.SetHealth(10 + 490 * (vit / 255f) * (vit / 255f) * (vit / 255f));
+                villain.stats.strength = 1 + str / 255f;
+                villain.stats.agility = 1 + dex / 255f;
+                villain.stats.magic = 1 + mag / 255f;
+                villain.stats.constitution = 1 + con / 255f;
 
-                    numSuccessfulSpawns++;
-                    Characters.StickMan villain = scene.AddComponent<Characters.StickMan>();
-                    new Characters.Brains.Enemy().TakeControl(villain);
-                    villain.SetHealth(10 + 490 * (vit / 255f) * (vit / 255f) * (vit / 255f));
-                    villain.stats.strength = 1 + str / 255f;
-                    villain.stats.agility = 1 + dex / 255f;
-                    villain.stats.magic = 1 + mag / 255f;
-                    villain.stats.constitution = 1 + con / 255f;
+                pos.y = scene.map.GetHeightAt(pos.x, pos.z);
+                pos.y += villain.originHeight + 1;
+                villain.physics.state.position = pos;
 
-                    pos.y = scene.map.GetHeightAt(pos.x, pos.z);
-                    pos.y += villain.originHeight + 1;
-                    villain.physics.state.position = pos;
+                float spellInterval = (float)System.Math.Ceiling(256f / (OffHand.spells.length + 1));
+                int spellIndex = mag / (int)spellInterval;
+                if (spellIndex > 1)
+                    villain.offHandWeapon = (Weapons.OffHand)villain.AddComponent(OffHand.spells[spellIndex - 1].type);
 
-                    float spellInterval = (float)System.Math.Ceiling(256f / (OffHand.spells.length + 1));
-                    int spellIndex = mag / (int)spellInterval;
-                    if (spellIndex > 1)
-                        villain.offHandWeapon = (Weapons.OffHand)villain.AddComponent(OffHand.spells[spellIndex - 1].type);
+                float wpnInterval = (float)System.Math.Ceiling(256f / (Weapon.WeaponAttribute.gruntNames.length - 1));
+                int wpnIndex = (int)(Sqrt(str / 255f) * 255) / (int)wpnInterval;
+                villain.mainHandWeapon = (Weapons.Weapon)villain.AddComponent(typeof(Weapons.Weapon), new CParams<string>(Weapon.WeaponAttribute.gruntNames[wpnIndex]));
 
-                    float wpnInterval = (float)System.Math.Ceiling(256f / (Weapon.WeaponAttribute.gruntNames.length - 1));
-                    int wpnIndex = (int)(Sqrt(str / 255f) * 255) / (int)wpnInterval;
-                    villain.mainHandWeapon = (Weapons.Weapon)villain.AddComponent(typeof(Weapons.Weapon), new CParams<string>(Weapon.WeaponAttribute.gruntNames[wpnIndex]));
-
-                    enemyEnabled.Add(new System.Tuple<Characters.StickMan, Wrapper<bool>>(villain, new Wrapper<bool>(false)));
-                    villain.mat = scene.game.materials.Load("Materials/Characters/Enemy.mat", this);
-                    villain.UpdateAnimations();
-                    villain.TogglePhysics();
-                    villain.doDraw = false;
-                }
+                enemyEnabled.Add(new System.Tuple<Characters.StickMan, Wrapper<bool>>(villain, new Wrapper<bool>(false)));
+                villain.mat = scene.game.materials.Load("Materials/Characters/Enemy.mat", this);
+                villain.UpdateAnimations();
+                villain.TogglePhysics();
+                villain.doDraw = false;
             }
         }
 
