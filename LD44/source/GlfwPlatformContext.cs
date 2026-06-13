@@ -18,12 +18,15 @@ namespace LD44
             public static GlfwWindow instance => _instance ??= new GlfwWindow();
             public readonly Glfw.Window* window;
 
-            int Window.width => 800;
-            int Window.height => 600;
+            int w, h;
+            int Window.width => w;
+            int Window.height => h;
 
             public GlfwWindow()
             {
-                window = Glfw.GLFW.CreateWindow(800, 600, "GLFW Raw Window", (Glfw.Monitor*)IntPtr.Zero, (Glfw.Window*)IntPtr.Zero);
+                Glfw.Monitor* monitor = Glfw.GLFW.GetPrimaryMonitor();
+                Glfw.VideoMode* vm = Glfw.GLFW.GetVideoMode(monitor);
+                window = Glfw.GLFW.CreateWindow(w = vm->Width, h = vm->Height, "LD44-BoredomBeGone", monitor, (Glfw.Window*)IntPtr.Zero);
                 Glfw.GLFW.MakeContextCurrent(window);
                 Glfw.GLFW.ShowWindow(window);
                 Glfw.GLFW.SetInputMode(window, Glfw.CursorStateAttribute.Cursor, Glfw.CursorModeValue.CursorDisabled);
