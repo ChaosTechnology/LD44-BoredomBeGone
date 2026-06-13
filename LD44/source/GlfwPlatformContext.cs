@@ -26,6 +26,7 @@ namespace LD44
                 window = Glfw.GLFW.CreateWindow(800, 600, "GLFW Raw Window", (Glfw.Monitor*)IntPtr.Zero, (Glfw.Window*)IntPtr.Zero);
                 Glfw.GLFW.MakeContextCurrent(window);
                 Glfw.GLFW.ShowWindow(window);
+                Glfw.GLFW.SetInputMode(window, Glfw.CursorStateAttribute.Cursor, Glfw.CursorModeValue.CursorDisabled);
             }
 
             void Window.Present()
