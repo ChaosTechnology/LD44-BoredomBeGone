@@ -7,42 +7,57 @@ using System.Windows.Forms;
 
 namespace LD44
 {
-    public class WindowsPlatformContext(Form window)
+    public class WindowsPlatformContext
         : MessageQueue
         , PlatformContext
+        , GlContext
     {
-        class WindowsWindow(Form window) : PrimaryWindow
+        class WindowsWindow : Window
         {
-            int PrimaryWindow.width => window.Width;
-            int PrimaryWindow.height => window.Height;
+            public readonly Form form;
+            readonly GLControl control;
+
+            int Window.width => form.Width;
+            int Window.height => form.Height;
+
+            public WindowsWindow(Form form)
+            {
+                this.form = form;
+                control = new GLControl();
+                control.Bounds = form.ClientRectangle;
+                control.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom;
+                form.Controls.Add(control);
+            }
+
+            void Window.Present()
+            {
+                control.Context.MakeCurrent();
+                control.SwapBuffers();
+            }
         }
 
-        PrimaryWindow PlatformContext.primaryWindow { get; } = new WindowsWindow(window);
+        public Form GetForm(Window window) => (window as WindowsWindow)?.form;
+
+        Window PlatformContext.CreateWindow()
+        {
+            var form = new Form();
+            var window = new WindowsWindow(form);
+            form.Show();
+            form.FormClosing += RaiseTerminate;
+            return window;
+        }
+
+        GlContext PlatformContext.glContext => this;
 
         public event Action Terminate;
-
-        GLControl control;
 
         void MessageQueue.ProcessMessages()
         {
             Application.DoEvents();
         }
 
-        void PlatformContext.Setup()
+        void GlContext.Init()
         {
-            window.Show();
-            window.FormClosing += RaiseTerminate;
-
-            control = new GLControl();
-            control.Bounds = window.ClientRectangle;
-            control.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom;
-            window.Controls.Add(control);
-            control.Context.MakeCurrent();
-        }
-
-        void PlatformContext.Present()
-        {
-            control.SwapBuffers();
         }
 
         void RaiseTerminate(object _, EventArgs __)

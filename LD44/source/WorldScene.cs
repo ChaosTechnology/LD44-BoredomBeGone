@@ -10,6 +10,7 @@ using ChaosFramework.Graphics.OpenGl.Lights.Intrinsic;
 using ChaosFramework.Graphics.OpenGl.PostProcessors;
 using ChaosFramework.Math;
 using ChaosFramework.Math.Vectors;
+using ChaosFramework.Platform;
 using LD44.Components.Characters.Brains;
 using LD44.Components.Interaction;
 using OpenTK.Graphics.OpenGL;
@@ -85,7 +86,7 @@ namespace LD44
                 float.NaN,
                 float.NaN,
                 PI_QUART / 2,
-                screenRatio: game.graphics.ratio
+                screenRatio: game.window.Ratio()
                 );
 
             using (new AccessScope<Game>(game))
@@ -94,8 +95,8 @@ namespace LD44
                     base.game.graphics,
                     view,
                     new Vector2i(
-                        (game.settings.deferredShaderSize.x <= 0) ? game.platformContext.primaryWindow.width : game.settings.deferredShaderSize.x,
-                        (game.settings.deferredShaderSize.y <= 0) ? game.platformContext.primaryWindow.height : game.settings.deferredShaderSize.y
+                        (game.settings.deferredShaderSize.x <= 0) ? game.window.width : game.settings.deferredShaderSize.x,
+                        (game.settings.deferredShaderSize.y <= 0) ? game.window.height : game.settings.deferredShaderSize.y
                         ),
                     lights = new LightSet(),
                     new DeferredShaderIntrinsicLights[] { new DirectionalLightIntrinsics(1) },
@@ -278,7 +279,7 @@ namespace LD44
         }
 
         void UpdateView()
-            => view.Update(view.Position, view.Direction, view.Up, screenRatio: game.graphics.ratio);
+            => view.Update(view.Position, view.Direction, view.Up, screenRatio: game.window.Ratio());
 
         public override void SetDrawCalls()
         {
@@ -294,7 +295,7 @@ namespace LD44
 
         void PrepareSky()
         {
-            GL.Viewport(0, 0, game.platformContext.primaryWindow.width, game.platformContext.primaryWindow.height);
+            GL.Viewport(0, 0, game.window.width, game.window.height);
             Graphics.ThrowErrors();
             game.graphics.stateTracker.BindFramebuffer(FramebufferTarget.Framebuffer, null);
         }
@@ -304,7 +305,7 @@ namespace LD44
 
         void Present()
         {
-            GL.Viewport(0, 0, game.platformContext.primaryWindow.width, game.platformContext.primaryWindow.height);
+            GL.Viewport(0, 0, game.window.width, game.window.height);
             Graphics.ThrowErrors();
             game.graphics.stateTracker.BindFramebuffer(FramebufferTarget.Framebuffer, null);
             antiEdger.normalFactor = 6f;

@@ -56,6 +56,7 @@ namespace LD44
         public Graphics graphics;
         public Settings settings;
         public Audio audio;
+        public Window window;
 
         Music music;
 
@@ -65,9 +66,10 @@ namespace LD44
 
         bool lockF11;
 
-        public Game(PlatformContext platformContext)
+        public Game(PlatformContext platformContext, Window window)
             : base((MessageQueue)platformContext) // TODO: merge MessageQueue interface into PlatformContext
         {
+            this.window = window;
             this.platformContext = platformContext;
             platformContext.Terminate += Terminate;
         }
@@ -82,7 +84,7 @@ namespace LD44
             music = new Music(audio, assetSource.OpenRead("Music/music.ogg"));
             music.PlayLoop(1);
 
-            graphics = new Graphics(platformContext, 3, 3);
+            graphics = new Graphics(platformContext.glContext, 3, 3);
             (fonts = new FontContainer(assetSource, graphics, false)).LoadDirectory("Fonts", new[] { ".chf2" }, true, this);
             (textures = new TextureContainer(assetSource, graphics.dispatcher, false)).LoadDirectory("Textures", new[] { ".png" }, true, this);
             (materials = new MaterialContainer(assetSource, graphics, textures, false)).LoadDirectory("Materials", new[] { ".mat" }, true, this);
@@ -122,7 +124,7 @@ namespace LD44
             GL.Clear(ClearBufferMask.ColorBufferBit);
             Graphics.ThrowErrors();
             base.Draw();
-            platformContext.Present();
+            window.Present();
         }
 
         protected override void DoDispose()

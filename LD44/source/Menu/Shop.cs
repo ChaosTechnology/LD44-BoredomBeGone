@@ -8,6 +8,7 @@ using ChaosFramework.Graphics.OpenGl.ChaosShader;
 using ChaosFramework.Math;
 using ChaosFramework.Collections;
 using ChaosFramework.Math.Vectors;
+using ChaosFramework.Platform;
 using ChaosUtil.Reflection;
 using SysCol = System.Collections.Generic;
 using Rex = System.Text.RegularExpressions;
@@ -73,11 +74,11 @@ namespace LD44.Menu
             DisposeChildren();
 
             Bounds2f bounds;
-            float ratioChange = game.graphics.ratio / TARGET_RATIO;
-            if (game.graphics.ratio > TARGET_RATIO)
+            float ratioChange = game.window.Ratio() / TARGET_RATIO;
+            if (game.window.Ratio() > TARGET_RATIO)
                 bounds = new Bounds2f(-TARGET_RATIO, -1, TARGET_RATIO, 1);
             else
-                bounds = new Bounds2f(-game.graphics.ratio, -ratioChange, game.graphics.ratio, ratioChange);
+                bounds = new Bounds2f(-game.window.Ratio(), -ratioChange, game.window.Ratio(), ratioChange);
 
             btnClose = AddComponent<Button>();
             btnClose.bounds = new Bounds2f(
@@ -370,7 +371,7 @@ namespace LD44.Menu
             Vector3f newMouseData = new Vector3f(mouse.X, mouse.Y, mouse.WheelPrecise);
             mouseDelta = new Vector3f(MOUSE_SENSITIVITY * (newMouseData.x - oldMouseData.x), -MOUSE_SENSITIVITY * (newMouseData.y - oldMouseData.y), newMouseData.z - oldMouseData.z);
             mousePosition += mouseDelta;
-            mousePosition.x = Clamp(-game.graphics.ratio, game.graphics.ratio, mousePosition.x);
+            mousePosition.x = Clamp(-game.window.Ratio(), game.window.Ratio(), mousePosition.x);
             mousePosition.y = Clamp(-1, 1, mousePosition.y);
             oldMouseData = newMouseData;
         }

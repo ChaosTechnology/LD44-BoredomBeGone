@@ -1,3 +1,4 @@
+using ChaosFramework.Platform;
 using System;
 using System.Reflection;
 using System.Windows.Forms;
@@ -39,17 +40,20 @@ namespace LD44
                 settings.Save(Settings.FILE);
 
 #if OS_WINDOWS
-            Form window = new Form();
-            window.Icon = Properties.Resources.icon;
-            window.Text = "Boredom Be Gone";
-            window.MinimumSize = new System.Drawing.Size(800, 450);
-            window.Size = new System.Drawing.Size(settings.deferredShaderSize.x, settings.deferredShaderSize.y);
-            window.BackgroundImageLayout = ImageLayout.Stretch;
-            window.BackgroundImage = new System.Drawing.Bitmap("Assets/LoadingScreen.png");
+            WindowsPlatformContext platformContext = new WindowsPlatformContext();
+            Window window = ((PlatformContext)platformContext).CreateWindow();
+            Form form = platformContext.GetForm(window);
+            form.Icon = Properties.Resources.icon;
+            form.Text = "Boredom Be Gone";
+            form.MinimumSize = new System.Drawing.Size(800, 450);
+            form.Size = new System.Drawing.Size(settings.deferredShaderSize.x, settings.deferredShaderSize.y);
+            form.BackgroundImageLayout = ImageLayout.Stretch;
+            form.BackgroundImage = new System.Drawing.Bitmap("Assets/LoadingScreen.png");
 
-            Game g = new Game(new WindowsPlatformContext(window));
+            Game g = new Game(platformContext, window);
 #else
-            Game g = new Game(new GlfwPlatformContext(Game._keyboard, Game._mouse));
+            PlatformContext platformContext = new GlfwPlatformContext(Game._keyboard, Game._mouse);
+            Game g = new Game(platformContext, platformContext.CreateWindow());
 #endif
 
             g.settings = settings;

@@ -1,71 +1,98 @@
-using ChaosFramework.Platform;
+using ChaosFramework.Collections;
 using ChaosFramework.Components;
-using OpenTK.Windowing.GraphicsLibraryFramework;
+using ChaosFramework.Platform;
+using Glfw = OpenTK.Windowing.GraphicsLibraryFramework;
+using OpenTK.Graphics.OpenGL;
 using System;
 
 namespace LD44
 {
-    public unsafe class GlfwPlatformContext(Game.LD44Keyboard keyboard, Game.LD44Mouse mouse)
+    public unsafe class GlfwPlatformContext
         : PlatformContext
+        , GlContext
         , MessageQueue
     {
-        public class WindowsPrimaryWindow : PrimaryWindow
+        class GlfwWindow : Window
         {
-            static WindowsPrimaryWindow _instance;
-            public static WindowsPrimaryWindow instance => _instance ??= new WindowsPrimaryWindow();
+            static GlfwWindow _instance;
+            public static GlfwWindow instance => _instance ??= new GlfwWindow();
+            public readonly Glfw.Window* window;
 
-            public readonly Window* window;
-            WindowsPrimaryWindow()
+            int Window.width => 800;
+            int Window.height => 600;
+
+            public GlfwWindow()
             {
-                GLFW.Init();
-                window = GLFW.CreateWindow(800, 600, "GLFW Raw Window", (Monitor*)IntPtr.Zero, (Window*)IntPtr.Zero);
-                GLFW.MakeContextCurrent(window);
-                GLFW.ShowWindow(window);
+                window = Glfw.GLFW.CreateWindow(800, 600, "GLFW Raw Window", (Glfw.Monitor*)IntPtr.Zero, (Glfw.Window*)IntPtr.Zero);
+                Glfw.GLFW.MakeContextCurrent(window);
+                Glfw.GLFW.ShowWindow(window);
             }
 
-            int PrimaryWindow.width => 800;
-            int PrimaryWindow.height => 600;
+            void Window.Present()
+            {
+                Glfw.GLFW.MakeContextCurrent(window);
+                Glfw.GLFW.SwapBuffers(window);
+            }
+        }
+
+        public readonly Game.LD44Keyboard keyboard;
+        public readonly Game.LD44Mouse mouse;
+
+        public GlfwPlatformContext(Game.LD44Keyboard keyboard, Game.LD44Mouse mouse)
+        {
+            this.keyboard = keyboard;
+            this.mouse = mouse;
+            Glfw.GLFW.Init();
         }
 
         public event Action Terminate;
         bool terminated = false;
+        AdvancedLinkedList<GlfwWindow> windows = new AdvancedLinkedList<GlfwWindow>();
 
-        public WindowsPrimaryWindow primaryWindow => WindowsPrimaryWindow.instance;
-        PrimaryWindow PlatformContext.primaryWindow => primaryWindow;
+        GlContext PlatformContext.glContext => this;
 
-        void PlatformContext.Setup()
+        Window PlatformContext.CreateWindow()
         {
-            _ = primaryWindow;
+            GlfwWindow window = new GlfwWindow();
+            windows.Add(window);
+            return window;
         }
 
-        public void Present()
+        void GlContext.Init()
         {
-            GLFW.SwapBuffers(primaryWindow.window);
+            GL.LoadBindings(new Glfw.GLFWBindingsContext());
         }
 
         void MessageQueue.ProcessMessages()
         {
-            GLFW.PollEvents();
+            Glfw.GLFW.PollEvents();
 
-            if (GLFW.WindowShouldClose(primaryWindow.window) && !terminated)
+            foreach (GlfwWindow window in windows)
+                if (Glfw.GLFW.WindowShouldClose(window.window))
+                    windows.RemoveCurrent();
+
+            if (windows.empty)
             {
-                terminated = true;
-                Terminate?.Invoke();
+                if (!terminated)
+                {
+                    terminated = true;
+                    Terminate?.Invoke();
+                }
                 return;
             }
 
-            foreach (var key in Enum.GetValues<Keys>())
-                keyboard.isDown[key] = GLFW.GetKey(primaryWindow.window, key) == InputAction.Press;
+            foreach (var key in Enum.GetValues<Glfw.Keys>())
+                keyboard.isDown[key] = Glfw.GLFW.GetKey(windows.first.window, key) == Glfw.InputAction.Press;
 
             const double offset = 25;
 
-            GLFW.GetCursorPos(primaryWindow.window, out double x, out double y);
-            GLFW.SetCursorPos(primaryWindow.window, offset, offset);
+            Glfw.GLFW.GetCursorPos(windows.first.window, out double x, out double y);
+            Glfw.GLFW.SetCursorPos(windows.first.window, offset, offset);
             mouse.X += (float)(x - offset);
             mouse.Y += (float)(y - offset);
 
-            mouse.leftButton = GLFW.GetMouseButton(primaryWindow.window, MouseButton.Left) == InputAction.Press;
-            mouse.rightButton = GLFW.GetMouseButton(primaryWindow.window, MouseButton.Right) == InputAction.Press;
+            mouse.leftButton = Glfw.GLFW.GetMouseButton(windows.first.window, Glfw.MouseButton.Left) == Glfw.InputAction.Press;
+            mouse.rightButton = Glfw.GLFW.GetMouseButton(windows.first.window, Glfw.MouseButton.Right) == Glfw.InputAction.Press;
         }
     }
 }

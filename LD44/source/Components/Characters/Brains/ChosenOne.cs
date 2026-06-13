@@ -3,6 +3,7 @@ using ChaosFramework.Graphics.Colors;
 using ChaosFramework.Graphics.Text;
 using ChaosFramework.Math;
 using ChaosFramework.Math.Vectors;
+using ChaosFramework.Platform;
 using static ChaosFramework.Math.Clamping;
 using static ChaosFramework.Math.Constants;
 using static ChaosFramework.Math.Exponentials;
@@ -50,7 +51,7 @@ namespace LD44.Components.Characters.Brains
         public override void TakeControl()
         {
             healthBar = myMan.AddComponent<Menu.Control<WorldScene>>();
-            healthBar.bounds = new Bounds2f(myMan.scene.game.graphics.ratio - 0.3f, 0.9f, myMan.scene.game.graphics.ratio, 1);
+            healthBar.bounds = new Bounds2f(myMan.scene.game.window.Ratio() - 0.3f, 0.9f, myMan.scene.game.window.Ratio(), 1);
             healthBar.texture = null;
             healthBar.text = new Menu.Text[] { new Menu.Text(myMan.scene, (drawnHealth = myMan.health).ToString(), Align.Right) };
         }
@@ -211,7 +212,7 @@ namespace LD44.Components.Characters.Brains
             if (diff < 0) drawnHealth = Max(myMan.health, drawnHealth);
             if (diff > 0) drawnHealth = Min(myMan.health, drawnHealth);
             healthBar.text[0].text = ((int)drawnHealth).ToString();
-            healthBar.bounds = new Bounds2f(myMan.scene.game.graphics.ratio - 0.3f, 0.9f, myMan.scene.game.graphics.ratio, 1);
+            healthBar.bounds = new Bounds2f(myMan.scene.game.window.Ratio() - 0.3f, 0.9f, myMan.scene.game.window.Ratio(), 1);
         }
 
         public override bool TryingToCast()

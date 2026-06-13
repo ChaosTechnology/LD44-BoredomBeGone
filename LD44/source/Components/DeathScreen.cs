@@ -2,6 +2,7 @@ using ChaosFramework.Graphics.OpenGl.AssetContainers;
 using ChaosFramework.Components;
 using ChaosFramework.Graphics.Colors;
 using ChaosFramework.Math;
+using ChaosFramework.Platform;
 using OpenTK.Graphics.OpenGL;
 
 namespace LD44.Components
@@ -52,7 +53,7 @@ namespace LD44.Components
                 GL.Clear(ClearBufferMask.ColorBufferBit);
                 ChaosFramework.Graphics.OpenGl.Graphics.ThrowErrors();
                 DrawLoadingScreen();
-                scene.game.platformContext.Present();
+                scene.game.window.Present();
                 scene.game.scenes.Add(new WorldScene(scene.game));
                 Dispose();
                 return;
@@ -64,7 +65,7 @@ namespace LD44.Components
             TextureContainer.Entry tmpTex = texture;
             Bounds2f tmpBounds = bounds;
             texture = loadingScreen;
-            bounds = new Bounds2f(-scene.game.graphics.ratio, -1, scene.game.graphics.ratio, 1);
+            bounds = new Bounds2f(-scene.game.window.Ratio(), -1, scene.game.window.Ratio(), 1);
             DrawControl();
             texture = tmpTex;
             bounds = tmpBounds;

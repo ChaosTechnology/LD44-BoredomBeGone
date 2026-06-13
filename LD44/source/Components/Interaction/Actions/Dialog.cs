@@ -2,6 +2,7 @@ using ChaosFramework.Graphics.OpenGl;
 using ChaosFramework.Graphics.Text;
 using ChaosFramework.Graphics.OpenGl.Text;
 using ChaosFramework.Math;
+using ChaosFramework.Platform;
 using static ChaosFramework.Math.Clamping;
 
 namespace LD44.Components.Interaction.Actions
@@ -60,7 +61,7 @@ namespace LD44.Components.Interaction.Actions
                         widestName = Max(widestName, value[i].speakerGeo.geo.geometryBounds.width);
 
                     widestName += SOME_CONSTANT;
-                    float lineWidth = (scene.game.graphics.ratio * 2 - 2 * SOME_MARGIN) / TEXT_SZ - widestName;
+                    float lineWidth = (scene.game.window.Ratio() * 2 - 2 * SOME_MARGIN) / TEXT_SZ - widestName;
                     for (int i = 0; i < value.Length; i++)
                         value[i] = new Line(scene, value[i].speakerName, scene.font.content.FitText(value[i].line, lineWidth));
 
@@ -120,7 +121,7 @@ namespace LD44.Components.Interaction.Actions
                 interactPoint.scene.hudView.SetValues(interactPoint.scene.textShader,
                     Matrix.Scaling(TEXT_SZ) *
                     Matrix.Translation(
-                        -scene.game.graphics.ratio + SOME_MARGIN,
+                        -scene.game.window.Ratio() + SOME_MARGIN,
                         -1 + SOME_MARGIN + heights[currentText],
                         0));
                 text[currentText].speakerGeo?.DrawText(interactPoint.scene.textShader, "HUD");
@@ -129,7 +130,7 @@ namespace LD44.Components.Interaction.Actions
                     Matrix.Translation(widestName, 0, 0) *
                     Matrix.Scaling(TEXT_SZ) *
                     Matrix.Translation(
-                        -scene.game.graphics.ratio + 0.05f,
+                        -scene.game.window.Ratio() + 0.05f,
                         -1 + SOME_MARGIN + heights[currentText],
                         0));
                 text[currentText].lineGeo?.DrawText(interactPoint.scene.textShader, "HUD");
