@@ -130,6 +130,10 @@ namespace LD44.Menu
             Button focused = null;
             btnSkill.click = () =>
             {
+                btnWeapon.enabled = true;
+                btnSpell.enabled = true;
+                btnSkill.enabled = false;
+
                 menuMode = 2;
                 lblDescription.text[0].text = "";
                 buttons.Clear();
@@ -190,6 +194,10 @@ namespace LD44.Menu
 
             btnWeapon.click = () =>
             {
+                btnWeapon.enabled = false;
+                btnSpell.enabled = true;
+                btnSkill.enabled = true;
+
                 menuMode = 0;
                 lblDescription.text[0].text = "";
                 buttons.Clear();
@@ -263,6 +271,10 @@ namespace LD44.Menu
 
             btnSpell.click = () =>
             {
+                btnWeapon.enabled = true;
+                btnSpell.enabled = false;
+                btnSkill.enabled = true;
+
                 menuMode = 1;
                 lblDescription.text[0].text = "";
                 buttons.Clear();
