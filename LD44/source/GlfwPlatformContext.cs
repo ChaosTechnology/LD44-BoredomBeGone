@@ -38,9 +38,13 @@ namespace LD44
 
         public readonly Game.LD44Keyboard keyboard;
         public readonly Game.LD44Mouse mouse;
+        readonly Glfw.GLFWCallbacks.MouseButtonCallback mouseCallback;
+        readonly Glfw.GLFWCallbacks.KeyCallback keyCallback;
 
         public GlfwPlatformContext(Game.LD44Keyboard keyboard, Game.LD44Mouse mouse)
         {
+            mouseCallback = MouseCallback;
+            keyCallback = KeyCallback;
             this.keyboard = keyboard;
             this.mouse = mouse;
             Glfw.GLFW.Init();
@@ -55,6 +59,8 @@ namespace LD44
         Window PlatformContext.CreateWindow()
         {
             GlfwWindow window = new GlfwWindow();
+            Glfw.GLFW.SetMouseButtonCallback(window.window, mouseCallback);
+            Glfw.GLFW.SetKeyCallback(window.window, keyCallback);
             windows.Add(window);
             return window;
         }
@@ -82,18 +88,31 @@ namespace LD44
                 return;
             }
 
-            foreach (var key in Enum.GetValues<Glfw.Keys>())
-                keyboard.isDown[key] = Glfw.GLFW.GetKey(windows.first.window, key) == Glfw.InputAction.Press;
-
             const double offset = 25;
-
             Glfw.GLFW.GetCursorPos(windows.first.window, out double x, out double y);
             Glfw.GLFW.SetCursorPos(windows.first.window, offset, offset);
             mouse.X += (float)(x - offset);
             mouse.Y += (float)(y - offset);
+        }
 
-            mouse.leftButton = Glfw.GLFW.GetMouseButton(windows.first.window, Glfw.MouseButton.Left) == Glfw.InputAction.Press;
-            mouse.rightButton = Glfw.GLFW.GetMouseButton(windows.first.window, Glfw.MouseButton.Right) == Glfw.InputAction.Press;
+        void MouseCallback(Glfw.Window* wnd, Glfw.MouseButton btn, Glfw.InputAction action, Glfw.KeyModifiers modifiers)
+        {
+            if (wnd == windows.first.window)
+                switch(btn)
+                {
+                    case Glfw.MouseButton.Button1:
+                        mouse.leftButton = action != Glfw.InputAction.Release;
+                        break;
+                    case Glfw.MouseButton.Button2:
+                        mouse.rightButton = action != Glfw.InputAction.Release;
+                        break;
+                }
+        }
+
+        void KeyCallback(Glfw.Window* wnd, Glfw.Keys key, int scanCode, Glfw.InputAction action, Glfw.KeyModifiers mods)
+        {
+            if (wnd == windows.first.window)
+                keyboard.isDown[key] = action != Glfw.InputAction.Release;
         }
     }
 }
