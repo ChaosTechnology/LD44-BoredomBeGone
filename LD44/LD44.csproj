@@ -13,9 +13,6 @@
   <Import Project="$(SolutionDir)submodules/ChaosPresets.Targets/Properties/Common.targets" />
   <Import Project="$(SolutionDir)submodules/ChaosPresets.Targets/Properties/OutputType/Executable.targets" />
 
-  <!-- Configurations -->
-  <Import Project="$(SolutionDir)submodules/ChaosPresets.Targets/Configurations.targets" />
-
   <!-- Included Files -->
   <Import Project="$(SolutionDir)submodules/ChaosPresets.Targets/StandardResources.targets" />
   <ItemGroup>
@@ -35,6 +32,9 @@
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Core.targets" />
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Graphics.targets" />
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Graphics.OpenGL.targets" />
+  <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Input.targets" />
+  <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Input.OpenTK.targets" />
+  <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Platform.targets" />
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.IO.targets" />
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Physics.targets" />
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Shapes.targets" />

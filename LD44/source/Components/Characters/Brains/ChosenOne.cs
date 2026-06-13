@@ -1,9 +1,11 @@
 using ChaosFramework.Graphics;
 using ChaosFramework.Graphics.Colors;
 using ChaosFramework.Graphics.Text;
+using ChaosFramework.Input;
 using ChaosFramework.Math;
 using ChaosFramework.Math.Vectors;
 using ChaosFramework.Platform;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using static ChaosFramework.Math.Clamping;
 using static ChaosFramework.Math.Constants;
 using static ChaosFramework.Math.Exponentials;
@@ -26,8 +28,8 @@ namespace LD44.Components.Characters.Brains
         public static ChosenOne GimmeMyChosenOne(ChaosFramework.Physics.CollisionData data)
             => GimmeMyChosenOne(data.p1) ?? GimmeMyChosenOne(data.p2);
 
-        Game.LD44Keyboard keyboard => myMan.scene.game.keyboard;
-        Game.LD44Mouse mouse => myMan.scene.game.mouse;
+        Keyboard keyboard => myMan.scene.game.keyboard;
+        Mouse mouse => myMan.scene.game.mouse;
 
         float oldMouseX, oldMouseY, oldMouseZ;
         float verticalView = 0;
@@ -61,10 +63,10 @@ namespace LD44.Components.Characters.Brains
 
         public override void Input()
         {
-            if (ftime > 0 && mouse.leftButton && myMan.mainHandWeapon != null)
+            if (ftime > 0 && mouse.buttons[(int)MouseButton.Left].down && myMan.mainHandWeapon != null)
             {
-                float dX = mouse.X - oldMouseX;
-                float dY = mouse.Y - oldMouseY;
+                float dX = mouse.x.value - oldMouseX;
+                float dY = mouse.y.value - oldMouseY;
 
                 myMan.armRotationSpeed += (new Vector2f(-dX * 0.005f / ftime, dY * 0.005f / ftime) - myMan.armRotationSpeed)
                                           * ftime
@@ -77,11 +79,11 @@ namespace LD44.Components.Characters.Brains
         {
             if (!interacting)
             {
-                float dX = mouse.X - oldMouseX;
-                float dY = mouse.Y - oldMouseY;
-                float dZ = mouse.WheelPrecise - oldMouseZ;
+                float dX = mouse.x.value - oldMouseX;
+                float dY = mouse.y.value - oldMouseY;
+                float dZ = mouse.scroll.value - oldMouseZ;
 
-                if (!mouse.leftButton)
+                if (!mouse.buttons[(int)MouseButton.Left].down)
                 {
                     physics.state.baseTransform *= Matrix.RotationY(dX * MOUSE_SENS_X * ftime);
                     verticalView += dY * ftime * MOUSE_SENS_Y;
@@ -96,31 +98,31 @@ namespace LD44.Components.Characters.Brains
                 else
                     camDist = Clamp(MIN_ZOOM, MAX_ZOOM, camDist - zoomDelta);
 
-                oldMouseZ = mouse.WheelPrecise;
+                oldMouseZ = mouse.scroll.value;
 
                 Matrix m = physics.state.GetTransform();
                 Vector3f localX = Vector3f.Normalize(m.row0.x0z);
                 Vector3f localZ = Vector3f.Normalize(m.row2.x0z);
 
-                if (keyboard.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.T))
+                if (keyboard[Keyboard.HidUsage.T].down)
                     autorun = true;
 
                 Vector3f move = Vector3f.EMPTY;
                 if (myMan.onGround)
                 {
-                    if (keyboard.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.A)) { move -= localX; autorun = false; }
-                    if (keyboard.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.D)) { move += localX; autorun = false; }
-                    if (keyboard.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.S)) { move -= localZ; autorun = false; }
-                    if (autorun || keyboard.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.W)) move += localZ;
-                    if (!lockF && keyboard.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F))
+                    if (keyboard[Keyboard.HidUsage.A].down) { move -= localX; autorun = false; }
+                    if (keyboard[Keyboard.HidUsage.D].down) { move += localX; autorun = false; }
+                    if (keyboard[Keyboard.HidUsage.S].down) { move -= localZ; autorun = false; }
+                    if (autorun || keyboard[Keyboard.HidUsage.W].down) move += localZ;
+                    if (!lockF && keyboard[Keyboard.HidUsage.F].down)
                         lockF = triesToInteract = true;
-                    else if (!keyboard.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F))
+                    else if (!keyboard[Keyboard.HidUsage.F].down)
                         lockF = triesToInteract = false;
                 }
 
                 move.Normalize();
                 move *= myMan.stats.walkingSpeed;
-                if (scene.game.keyboard.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.LeftShift))
+                if (keyboard[Keyboard.HidUsage.ShiftLeft].down)
                 {
                     move.x *= myMan.stats.speedFactor;
                     if (move.z > 0)
@@ -137,7 +139,7 @@ namespace LD44.Components.Characters.Brains
                     physics.state.velocity += horizontalVelocity * ftime * 15;
 
                 Vector3f headPos = physics.state.position;
-                if (myMan.onGround && scene.game.keyboard.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.Space))
+                if (myMan.onGround && keyboard[Keyboard.HidUsage.Space].down)
                 {
                     myMan.DoDamage(myMan.stats.lifeDrainStamina);
                     physics.state.velocity.y = myMan.stats.jumpLaunch;
@@ -182,7 +184,7 @@ namespace LD44.Components.Characters.Brains
                 cameraDistance += (targetCameraDistance - cameraDistance) * EaseIn(ftime * 10);
 
 #if DEBUG
-                if (keyboard.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.H))
+                if (keyboard[Keyboard.HidUsage.H].down)
                 {
                     if (!lockHealthCheat)
                     {
@@ -200,8 +202,8 @@ namespace LD44.Components.Characters.Brains
                     scene.view.Direction + (interpolatedCamDir - scene.view.Direction) * EaseIn(ftime * 10),
                     new Vector3f(0, 1, 0));
 
-                oldMouseX = mouse.X;
-                oldMouseY = mouse.Y;
+                oldMouseX = mouse.x.value;
+                oldMouseY = mouse.y.value;
             }
         }
 
@@ -216,7 +218,7 @@ namespace LD44.Components.Characters.Brains
         }
 
         public override bool TryingToCast()
-            => mouse.rightButton;
+            => mouse.buttons[(int)MouseButton.Right].down;
 
         public override void CreateDamageDisplay(float displayDamage)
         {

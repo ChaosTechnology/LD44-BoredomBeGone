@@ -4,19 +4,19 @@ using ChaosFramework.Platform;
 using Glfw = OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Graphics.OpenGL;
 using System;
+using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.Common;
+using OpenTK.Mathematics;
 
 namespace LD44
 {
     public unsafe class GlfwPlatformContext
         : PlatformContext
         , GlContext
-        , MessageQueue
     {
-        class GlfwWindow : Window
+        public class GlfwWindow : Window
         {
-            static GlfwWindow _instance;
-            public static GlfwWindow instance => _instance ??= new GlfwWindow();
-            public readonly Glfw.Window* window;
+            public readonly NativeWindow window;
 
             int w, h;
             int Window.width => w;
@@ -26,30 +26,30 @@ namespace LD44
             {
                 Glfw.Monitor* monitor = Glfw.GLFW.GetPrimaryMonitor();
                 Glfw.VideoMode* vm = Glfw.GLFW.GetVideoMode(monitor);
-                window = Glfw.GLFW.CreateWindow(w = vm->Width, h = vm->Height, "LD44-BoredomBeGone", monitor, (Glfw.Window*)IntPtr.Zero);
-                Glfw.GLFW.MakeContextCurrent(window);
-                Glfw.GLFW.ShowWindow(window);
-                Glfw.GLFW.SetInputMode(window, Glfw.CursorStateAttribute.Cursor, Glfw.CursorModeValue.CursorDisabled);
+                window = new NativeWindow(new NativeWindowSettings()
+                {
+                    Size = new Vector2i(w = vm->Width, h = vm->Height),
+                    Title = "LD44-BoredomBeGone",
+                    WindowState = WindowState.Fullscreen,
+                    StartVisible = true,
+                    APIVersion = new Version(3, 3)
+                });
+                Glfw.GLFW.MakeContextCurrent(window.WindowPtr);
+                Glfw.GLFW.ShowWindow(window.WindowPtr);
+                Glfw.GLFW.SetInputMode(window.WindowPtr, Glfw.CursorStateAttribute.Cursor, Glfw.CursorModeValue.CursorDisabled);
             }
 
             void Window.Present()
             {
-                Glfw.GLFW.MakeContextCurrent(window);
-                Glfw.GLFW.SwapBuffers(window);
+                Glfw.GLFW.MakeContextCurrent(window.WindowPtr);
+                Glfw.GLFW.SwapBuffers(window.WindowPtr);
             }
         }
 
-        public readonly Game.LD44Keyboard keyboard;
-        public readonly Game.LD44Mouse mouse;
-        readonly Glfw.GLFWCallbacks.MouseButtonCallback mouseCallback;
-        readonly Glfw.GLFWCallbacks.KeyCallback keyCallback;
+        Overhead PlatformContext.messageQueue => PerformOverhead;
 
-        public GlfwPlatformContext(Game.LD44Keyboard keyboard, Game.LD44Mouse mouse)
+        public GlfwPlatformContext()
         {
-            mouseCallback = MouseCallback;
-            keyCallback = KeyCallback;
-            this.keyboard = keyboard;
-            this.mouse = mouse;
             Glfw.GLFW.Init();
         }
 
@@ -59,63 +59,34 @@ namespace LD44
 
         GlContext PlatformContext.glContext => this;
 
-        Window PlatformContext.CreateWindow()
+        public GlfwWindow CreateWindow()
         {
             GlfwWindow window = new GlfwWindow();
-            Glfw.GLFW.SetMouseButtonCallback(window.window, mouseCallback);
-            Glfw.GLFW.SetKeyCallback(window.window, keyCallback);
             windows.Add(window);
             return window;
         }
+
+        Window PlatformContext.CreateWindow()
+            => CreateWindow();
 
         void GlContext.Init()
         {
             GL.LoadBindings(new Glfw.GLFWBindingsContext());
         }
 
-        void MessageQueue.ProcessMessages()
+        void PerformOverhead()
         {
             Glfw.GLFW.PollEvents();
 
             foreach (GlfwWindow window in windows)
-                if (Glfw.GLFW.WindowShouldClose(window.window))
+                if (Glfw.GLFW.WindowShouldClose(window.window.WindowPtr))
                     windows.RemoveCurrent();
 
-            if (windows.empty)
+            if (windows.empty && !terminated)
             {
-                if (!terminated)
-                {
-                    terminated = true;
-                    Terminate?.Invoke();
-                }
-                return;
+                terminated = true;
+                Terminate?.Invoke();
             }
-
-            const double offset = 25;
-            Glfw.GLFW.GetCursorPos(windows.first.window, out double x, out double y);
-            Glfw.GLFW.SetCursorPos(windows.first.window, offset, offset);
-            mouse.X += (float)(x - offset);
-            mouse.Y += (float)(y - offset);
-        }
-
-        void MouseCallback(Glfw.Window* wnd, Glfw.MouseButton btn, Glfw.InputAction action, Glfw.KeyModifiers modifiers)
-        {
-            if (wnd == windows.first.window)
-                switch(btn)
-                {
-                    case Glfw.MouseButton.Button1:
-                        mouse.leftButton = action != Glfw.InputAction.Release;
-                        break;
-                    case Glfw.MouseButton.Button2:
-                        mouse.rightButton = action != Glfw.InputAction.Release;
-                        break;
-                }
-        }
-
-        void KeyCallback(Glfw.Window* wnd, Glfw.Keys key, int scanCode, Glfw.InputAction action, Glfw.KeyModifiers mods)
-        {
-            if (wnd == windows.first.window)
-                keyboard.isDown[key] = action != Glfw.InputAction.Release;
         }
     }
 }

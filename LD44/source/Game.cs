@@ -2,42 +2,24 @@ using ChaosFramework.Graphics.OpenGl;
 using ChaosFramework.Graphics.OpenGl.AssetContainers;
 using ChaosFramework.Components;
 using ChaosFramework.IO.Streams;
-using ChaosFramework.IO.Streams.Sources;
 using ChaosFramework.Math.Vectors;
 using ChaosFramework.Physics;
 using ChaosFramework.Platform;
 using ChaosFramework.Sound;
 using ChaosFramework.Sound.OpenAL;
-using ChaosUtil.Primitives;
+using ChaosFramework.Input;
 using ChaosUtil.Serialization.Text;
 using OpenTK.Graphics.OpenGL;
-using System;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace LD44
 {
     public class Game : BaseGame
     {
-        public class LD44Mouse
-        {
-            public bool rightButton, leftButton;
-            public float X, Y, WheelPrecise;
-        }
+        readonly InputContext input;
 
-        public class LD44Keyboard
-        {
-            public Dictionary<OpenTK.Windowing.GraphicsLibraryFramework.Keys, bool> isDown = new();
-            public bool IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys keys)
-            {
-                return isDown.GetValueOrDefault(keys, false);
-            }
-        }
-
-        public static readonly LD44Mouse _mouse = new LD44Mouse();
-        public static readonly LD44Keyboard _keyboard = new LD44Keyboard();
-
-        public readonly LD44Mouse mouse = _mouse;
-        public readonly LD44Keyboard keyboard = _keyboard;
+        public Mouse mouse => input.EnumerateDevices<Mouse>().FirstOrDefault();
+        public Keyboard keyboard => input.EnumerateDevices<Keyboard>().FirstOrDefault();
 
         public StreamSource assetSource {get; private set; }
 
@@ -66,18 +48,22 @@ namespace LD44
 
         bool lockF11;
 
-        public Game(PlatformContext platformContext, Window window)
-            : base((MessageQueue)platformContext) // TODO: merge MessageQueue interface into PlatformContext
+        enum InputLayers { _ }
+
+        public Game(PlatformContext platformContext, Window window, System.Func<InputContext, InputDeviceHost> createInputContext)
+            : base(platformContext.messageQueue)
         {
             this.window = window;
             this.platformContext = platformContext;
+            input = new InputContext(typeof(InputLayers), createInputContext);
+            input.UpdateDeviceList();
             platformContext.Terminate += Terminate;
         }
 
         public override void LoadGame()
         {
             base.LoadGame();
-            gameLoop = new ChaosFramework.Components.GameLoop.CappedVariableTimeLoop((MessageQueue)platformContext, settings.maxFPS);
+            gameLoop = new ChaosFramework.Components.GameLoop.CappedVariableTimeLoop(platformContext.messageQueue, settings.maxFPS);
 
             assetSource = new ChaosFramework.IO.ChaosArchive(new System.IO.FileInfo("./assets.cha"), false);
 
@@ -103,7 +89,9 @@ namespace LD44
 
         protected override void Update()
         {
-            bool toggleFullScreen = keyboard.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F11);
+            input.UpdateInputConsumption();
+
+            bool toggleFullScreen = keyboard[Keyboard.HidUsage.F11].down;
             if (toggleFullScreen && !lockF11)
             {
                 preventRedrawOnResize = true;
@@ -145,6 +133,7 @@ namespace LD44
             shaderCode?.Dispose();
             animations?.Dispose();
             shapes?.Dispose();
+            input?.Dispose();
         }
     }
 }

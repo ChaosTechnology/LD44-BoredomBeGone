@@ -41,13 +41,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LD44", "LD44\LD44.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChaosFramework.Platform", "submodules\ChaosFramework.Platform\ChaosFramework.Platform.csproj", "{6CD6109D-B63A-4A08-B516-D9CE3C3F0097}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChaosFramework.Input", "submodules\ChaosFramework.Input\ChaosFramework.Input.csproj", "{3B397619-8336-43A0-B615-12905389D6DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChaosFramework.Input.OpenTK", "submodules\ChaosFramework.Input.OpenTK\ChaosFramework.Input.OpenTK.csproj", "{6CDA2FEB-0852-44AA-ABBA-B76AA3EA145A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A1024CC0-A665-4602-A422-8E1F88F5E3AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -122,6 +123,17 @@ Global
 		{6CD6109D-B63A-4A08-B516-D9CE3C3F0097}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6CD6109D-B63A-4A08-B516-D9CE3C3F0097}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6CD6109D-B63A-4A08-B516-D9CE3C3F0097}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B397619-8336-43A0-B615-12905389D6DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B397619-8336-43A0-B615-12905389D6DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B397619-8336-43A0-B615-12905389D6DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B397619-8336-43A0-B615-12905389D6DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CDA2FEB-0852-44AA-ABBA-B76AA3EA145A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CDA2FEB-0852-44AA-ABBA-B76AA3EA145A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CDA2FEB-0852-44AA-ABBA-B76AA3EA145A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CDA2FEB-0852-44AA-ABBA-B76AA3EA145A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A1024CC0-A665-4602-A422-8E1F88F5E3AF} = {38AAC96B-4F27-49BF-A055-77D74575A42B}
@@ -141,5 +153,7 @@ Global
 		{53B2266C-F2B0-41A9-8EF7-F89FD6BC40FF} = {38AAC96B-4F27-49BF-A055-77D74575A42B}
 		{004E9F33-CF5E-4EB6-A08C-3CBB0AB08E72} = {38AAC96B-4F27-49BF-A055-77D74575A42B}
 		{6CD6109D-B63A-4A08-B516-D9CE3C3F0097} = {38AAC96B-4F27-49BF-A055-77D74575A42B}
+		{3B397619-8336-43A0-B615-12905389D6DA} = {38AAC96B-4F27-49BF-A055-77D74575A42B}
+		{6CDA2FEB-0852-44AA-ABBA-B76AA3EA145A} = {38AAC96B-4F27-49BF-A055-77D74575A42B}
 	EndGlobalSection
 EndGlobal

@@ -44,7 +44,7 @@ namespace LD44.Components
 
         void ConsiderSuicide()
         {
-            if (scene.game.keyboard.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.Backspace))
+            if (scene.game.keyboard[ChaosFramework.Input.Keyboard.HidUsage.Backspace].down)
             {
                 // what were we thinking?
                 scene.Dispose();

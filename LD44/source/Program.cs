@@ -1,3 +1,4 @@
+using ChaosFramework.Input;
 using ChaosFramework.Platform;
 using System;
 using System.Reflection;
@@ -52,8 +53,10 @@ namespace LD44
 
             Game g = new Game(platformContext, window);
 #else
-            PlatformContext platformContext = new GlfwPlatformContext(Game._keyboard, Game._mouse);
-            Game g = new Game(platformContext, platformContext.CreateWindow());
+            GlfwPlatformContext platformContext = new GlfwPlatformContext();
+            GlfwPlatformContext.GlfwWindow window = platformContext.CreateWindow();
+            Func<InputContext, InputDeviceHost> createHost = _ => new ChaosFramework.Input.OpenTk.DeviceHost(_, window.window);
+            Game g = new Game(platformContext, window, createHost);
 #endif
 
             g.settings = settings;

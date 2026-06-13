@@ -8,8 +8,7 @@ using System.Windows.Forms;
 namespace LD44
 {
     public class WindowsPlatformContext
-        : MessageQueue
-        , PlatformContext
+        : PlatformContext
         , GlContext
     {
         class WindowsWindow : Window
@@ -19,6 +18,8 @@ namespace LD44
 
             int Window.width => form.Width;
             int Window.height => form.Height;
+
+            Overhead PlatformContext.messageQueue => System.Windows.Forms.Application.DoEvents;
 
             public WindowsWindow(Form form)
             {
@@ -50,11 +51,6 @@ namespace LD44
         GlContext PlatformContext.glContext => this;
 
         public event Action Terminate;
-
-        void MessageQueue.ProcessMessages()
-        {
-            Application.DoEvents();
-        }
 
         void GlContext.Init()
         {

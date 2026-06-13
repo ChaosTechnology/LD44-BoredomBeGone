@@ -95,7 +95,7 @@ namespace LD44.Components.Interaction.Actions
 
         void Interact()
         {
-            if (scene.game.keyboard.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F))
+            if (scene.game.keyboard[ChaosFramework.Input.Keyboard.HidUsage.F].down)
             {
                 if (!lockF)
                     currentText++;
