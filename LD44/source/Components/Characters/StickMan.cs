@@ -107,7 +107,7 @@ namespace LD44.Components.Characters
             mat = scene.game.materials.Load("Materials/Characters/Chosen One.mat", this);
             anim = scene.game.animations.Load("Animations/Chosen One.anim", this);
 
-            rig = Rig.FromStreamSource(Game.assetSource, "Animations/Chosen One.rig");
+            rig = Rig.FromStreamSource(scene.game.assetSource, "Animations/Chosen One.rig");
             boneSwordArm = rig.root.GetBoneByName("Lower Arm.L");
             boneSpellArm = rig.root.GetBoneByName("Lower Arm.R");
             boneHead = rig.root.GetBoneByName("Head");

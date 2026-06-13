@@ -43,7 +43,7 @@ namespace LD44.Components.Map
             LinkedList<Vector3f> branchOrigins = BranchOrigins(mesh.content.data);
             MeshShape collisionBase = new MeshShape(mesh.content.data.pos.ToArray(), true);
 
-            using (System.IO.Stream str = Game.assetSource.OpenRead("Textures/Map/MapBounds.png"))
+            using (System.IO.Stream str = scene.game.assetSource.OpenRead("Textures/Map/MapBounds.png"))
             {
                 Rgba8Image bm = Png.FromStream(str);
                 uint width = bm.w;

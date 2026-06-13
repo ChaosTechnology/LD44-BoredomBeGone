@@ -20,9 +20,6 @@
   <Import Project="$(SolutionDir)submodules/ChaosPresets.Targets/StandardResources.targets" />
   <ItemGroup>
     <Compile Include="source/**/*.cs" />
-    <None Include="Assets/**/*.*" Exclude="**/*.ini;**/*.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="License/**/*.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -58,5 +55,22 @@
 
   <!-- Build Tasks -->
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/BuildTasks/ChaosBuild.CodeFormatter.Tasks.ChangedProjectFiles.targets" />
+
+  <UsingTask
+    TaskName="ChaosArchive"
+    AssemblyFile="$(SolutionDir)/submodules/ChaosFrameworkBuild.ArchiveCreator/build/bin/netstandard2.0/ChaosFrameworkBuild.ArchiveCreator.dll"
+    />
+
+  <Target
+    Name="CreateArchive"
+    BeforeTargets="BeforeBuild"
+    >
+    <ChaosArchive
+      SourceFolder="Assets"
+      TargetFile="assets.cha"
+      OutputPath="$(OutputPath)"
+      IntermediateOutputPath="$(IntermediateOutputPath)"
+      />
+  </Target>
 
 </Project>

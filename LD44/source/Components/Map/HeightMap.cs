@@ -68,19 +68,19 @@ namespace LD44.Components.Map
             mapmap = scene.game.textures.Load("Textures/Map/MapMap.png", this);
 
             LinkedList<Func<RawDataHandle>[]> tex = new LinkedList<Func<RawDataHandle>[]>();
-            foreach (string matKey in Game.assetSource.EnumerateKeys().Where(IsMapFile))
+            foreach (string matKey in scene.game.assetSource.EnumerateKeys().Where(IsMapFile))
             {
                 Func<RawDataHandle>[] matTex = new Func<RawDataHandle>[4];
                 tex.Add(matTex);
 
-                using (Stream matStr = Game.assetSource.OpenRead(matKey))
+                using (Stream matStr = scene.game.assetSource.OpenRead(matKey))
                 using (StreamReader matRd = new StreamReader(matStr))
                 {
                     Material.LayerKeys meta = Material.Parse(matRd, matKey);
-                    matTex[0] = meta.normal == null ? null : Png.FromStream(Game.assetSource.OpenRead(meta.normal)).GetRawData;
-                    matTex[1] = meta.emissive == null ? null : Png.FromStream(Game.assetSource.OpenRead(meta.emissive)).GetRawData;
-                    matTex[2] = meta.diffuse == null ? null : Png.FromStream(Game.assetSource.OpenRead(meta.diffuse)).GetRawData;
-                    matTex[3] = meta.specular == null ? null : Png.FromStream(Game.assetSource.OpenRead(meta.specular)).GetRawData;
+                    matTex[0] = meta.normal == null ? null : Png.FromStream(scene.game.assetSource.OpenRead(meta.normal)).GetRawData;
+                    matTex[1] = meta.emissive == null ? null : Png.FromStream(scene.game.assetSource.OpenRead(meta.emissive)).GetRawData;
+                    matTex[2] = meta.diffuse == null ? null : Png.FromStream(scene.game.assetSource.OpenRead(meta.diffuse)).GetRawData;
+                    matTex[3] = meta.specular == null ? null : Png.FromStream(scene.game.assetSource.OpenRead(meta.specular)).GetRawData;
                 }
             }
 
@@ -102,7 +102,7 @@ namespace LD44.Components.Map
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2DArray);
             Graphics.ThrowErrors();
 
-            mapData = new HeightMapData(Game.assetSource.OpenRead("Textures/Map/Height.png"));
+            mapData = new HeightMapData(scene.game.assetSource.OpenRead("Textures/Map/Height.png"));
             physics = new Physical(this);
             physics.shapes.Clear();
             physics.isStatic = true;

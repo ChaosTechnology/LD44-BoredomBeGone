@@ -15,19 +15,19 @@ namespace LD44.Components
         protected override void Create(CreateParameters cparams)
         {
             sky = CubeTexture.FromStreams(scene.game.graphics.dispatcher,
-                Game.assetSource.OpenRead("Textures/Sky/Left_.png"),
-                Game.assetSource.OpenRead("Textures/Sky/Right_.png"),
-                Game.assetSource.OpenRead("Textures/Sky/Bottom_.png"),
-                Game.assetSource.OpenRead("Textures/Sky/Top.png"),
-                Game.assetSource.OpenRead("Textures/Sky/Back_.png"),
-                Game.assetSource.OpenRead("Textures/Sky/Front_.png"));
+                scene.game.assetSource.OpenRead("Textures/Sky/Left_.png"),
+                scene.game.assetSource.OpenRead("Textures/Sky/Right_.png"),
+                scene.game.assetSource.OpenRead("Textures/Sky/Bottom_.png"),
+                scene.game.assetSource.OpenRead("Textures/Sky/Top.png"),
+                scene.game.assetSource.OpenRead("Textures/Sky/Back_.png"),
+                scene.game.assetSource.OpenRead("Textures/Sky/Front_.png"));
             skyReflection = CubeTexture.FromStreams(scene.game.graphics.dispatcher,
-                Game.assetSource.OpenRead("Textures/Sky/Left.png"),
-                Game.assetSource.OpenRead("Textures/Sky/Right.png"),
-                Game.assetSource.OpenRead("Textures/Sky/Bottom.png"),
-                Game.assetSource.OpenRead("Textures/Sky/Top.png"),
-                Game.assetSource.OpenRead("Textures/Sky/Back.png"),
-                Game.assetSource.OpenRead("Textures/Sky/Front.png"));
+                scene.game.assetSource.OpenRead("Textures/Sky/Left.png"),
+                scene.game.assetSource.OpenRead("Textures/Sky/Right.png"),
+                scene.game.assetSource.OpenRead("Textures/Sky/Bottom.png"),
+                scene.game.assetSource.OpenRead("Textures/Sky/Top.png"),
+                scene.game.assetSource.OpenRead("Textures/Sky/Back.png"),
+                scene.game.assetSource.OpenRead("Textures/Sky/Front.png"));
             shader = scene.game.shaders.Load("Shaders/Sky.fx", this);
         }
 

@@ -39,7 +39,7 @@ namespace LD44
         public readonly LD44Mouse mouse = _mouse;
         public readonly LD44Keyboard keyboard = _keyboard;
 
-        public static readonly StreamSource assetSource = new CachedFileStreamSource(new System.IO.DirectoryInfo("Assets/"));
+        public StreamSource assetSource {get; private set; }
 
         internal static void PrepareIO()
             =>  Parse.AddParser<Vector2i>(Parsers.ParseVector2i);
@@ -78,6 +78,8 @@ namespace LD44
         {
             base.LoadGame();
             gameLoop = new ChaosFramework.Components.GameLoop.CappedVariableTimeLoop((MessageQueue)platformContext, settings.maxFPS);
+
+            assetSource = new ChaosFramework.IO.ChaosArchive(new System.IO.FileInfo("./assets.cha"), false);
 
             audio = new Audio();
             samples = new SoundDataContainer(assetSource, false);

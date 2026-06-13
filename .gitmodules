@@ -82,3 +82,6 @@
 [submodule "submodules/ChaosFramework.Sound.OpenAL"]
 	path = submodules/ChaosFramework.Sound.OpenAL
 	url = ../../ChaosFramework/ChaosFramework.Sound.OpenAL.git
+[submodule "submodules/ChaosFrameworkBuild.ArchiveCreator"]
+	path = submodules/ChaosFrameworkBuild.ArchiveCreator
+	url = ../../ChaosFramework/ChaosFrameworkBuild.ArchiveCreator.git

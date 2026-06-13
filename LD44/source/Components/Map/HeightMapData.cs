@@ -18,7 +18,6 @@ namespace LD44.Components.Map
         const int NUM_TEX_REPEATS = 1;
 
         static SysCol.Dictionary<Graphics, Mesh> graphicsMeshes = new SysCol.Dictionary<Graphics, Mesh>();
-        public static HeightMapData[] presets;
 
         public static Vector3f[] hullBoxVerts = new Vector3f[] {
             new Vector3f(-0.5f, LOW_CUT, -0.5f),
@@ -30,20 +29,6 @@ namespace LD44.Components.Map
             new Vector3f( 0.5f, ROUGHNESS, -0.5f),
             new Vector3f( 0.5f, ROUGHNESS, 0.5f),
         };
-
-        static readonly object staticCtorLock = new object();
-        static HeightMapData()
-        {
-            lock (staticCtorLock)
-            {
-                string path;
-                int i = 0;
-                LinkedList<HeightMapData> data = new LinkedList<HeightMapData>();
-                while (System.IO.File.Exists(path = "Tiles/HeightMaps/" + i++ + ".png"))
-                    data.Add(new HeightMapData(Game.assetSource.OpenRead(path)));
-                presets = data.ToArray();
-            }
-        }
 
         public float cellSize, numCells;
         public int vertsPerRow;
