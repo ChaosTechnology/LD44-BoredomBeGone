@@ -1,3 +1,5 @@
+using System.DirectoryServices;
+using System.Linq;
 using ChaosFramework.Graphics;
 using ChaosFramework.Graphics.Colors;
 using ChaosFramework.Graphics.Text;
@@ -5,7 +7,6 @@ using ChaosFramework.Input;
 using ChaosFramework.Math;
 using ChaosFramework.Math.Vectors;
 using ChaosFramework.Platform;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using static ChaosFramework.Math.Clamping;
 using static ChaosFramework.Math.Constants;
 using static ChaosFramework.Math.Exponentials;
@@ -27,9 +28,6 @@ namespace LD44.Components.Characters.Brains
 
         public static ChosenOne GimmeMyChosenOne(ChaosFramework.Physics.CollisionData data)
             => GimmeMyChosenOne(data.p1) ?? GimmeMyChosenOne(data.p2);
-
-        Keyboard keyboard => myMan.scene.game.keyboard;
-        Mouse mouse => myMan.scene.game.mouse;
 
         float oldMouseX, oldMouseY, oldMouseZ;
         float verticalView = 0;
@@ -63,10 +61,10 @@ namespace LD44.Components.Characters.Brains
 
         public override void Input()
         {
-            if (ftime > 0 && mouse.buttons[(int)MouseButton.Left].down && myMan.mainHandWeapon != null)
+            if (ftime > 0 && scene.game.IsMouseDown(Mouse.ButtonSemantic.Left) && myMan.mainHandWeapon != null)
             {
-                float dX = mouse.x.value - oldMouseX;
-                float dY = mouse.y.value - oldMouseY;
+                float dX = scene.game.MouseX() - oldMouseX;
+                float dY = scene.game.MouseY() - oldMouseY;
 
                 myMan.armRotationSpeed += (new Vector2f(-dX * 0.005f / ftime, dY * 0.005f / ftime) - myMan.armRotationSpeed)
                                           * ftime
@@ -79,11 +77,11 @@ namespace LD44.Components.Characters.Brains
         {
             if (!interacting)
             {
-                float dX = mouse.x.value - oldMouseX;
-                float dY = mouse.y.value - oldMouseY;
-                float dZ = mouse.scroll.value - oldMouseZ;
+                float dX = scene.game.MouseX() - oldMouseX;
+                float dY = scene.game.MouseY() - oldMouseY;
+                float dZ = scene.game.Scroll() - oldMouseZ;
 
-                if (!mouse.buttons[(int)MouseButton.Left].down)
+                if (!scene.game.IsMouseDown(Mouse.ButtonSemantic.Left))
                 {
                     physics.state.baseTransform *= Matrix.RotationY(dX * MOUSE_SENS_X * ftime);
                     verticalView += dY * ftime * MOUSE_SENS_Y;
@@ -98,31 +96,31 @@ namespace LD44.Components.Characters.Brains
                 else
                     camDist = Clamp(MIN_ZOOM, MAX_ZOOM, camDist - zoomDelta);
 
-                oldMouseZ = mouse.scroll.value;
+                oldMouseZ = scene.game.Scroll();
 
                 Matrix m = physics.state.GetTransform();
                 Vector3f localX = Vector3f.Normalize(m.row0.x0z);
                 Vector3f localZ = Vector3f.Normalize(m.row2.x0z);
 
-                if (keyboard[Keyboard.HidUsage.T].down)
+                if (scene.game.IsKeyDown(Keyboard.HidUsage.T))
                     autorun = true;
 
                 Vector3f move = Vector3f.EMPTY;
                 if (myMan.onGround)
                 {
-                    if (keyboard[Keyboard.HidUsage.A].down) { move -= localX; autorun = false; }
-                    if (keyboard[Keyboard.HidUsage.D].down) { move += localX; autorun = false; }
-                    if (keyboard[Keyboard.HidUsage.S].down) { move -= localZ; autorun = false; }
-                    if (autorun || keyboard[Keyboard.HidUsage.W].down) move += localZ;
-                    if (!lockF && keyboard[Keyboard.HidUsage.F].down)
+                    if (scene.game.IsKeyDown(Keyboard.HidUsage.A)) { move -= localX; autorun = false; }
+                    if (scene.game.IsKeyDown(Keyboard.HidUsage.D)) { move += localX; autorun = false; }
+                    if (scene.game.IsKeyDown(Keyboard.HidUsage.S)) { move -= localZ; autorun = false; }
+                    if (autorun || scene.game.IsKeyDown(Keyboard.HidUsage.W)) move += localZ;
+                    if (!lockF && scene.game.IsKeyDown(Keyboard.HidUsage.F))
                         lockF = triesToInteract = true;
-                    else if (!keyboard[Keyboard.HidUsage.F].down)
+                    else if (!scene.game.IsKeyDown(Keyboard.HidUsage.F))
                         lockF = triesToInteract = false;
                 }
 
                 move.Normalize();
                 move *= myMan.stats.walkingSpeed;
-                if (keyboard[Keyboard.HidUsage.ShiftLeft].down)
+                if (scene.game.IsKeyDown(Keyboard.HidUsage.ShiftLeft))
                 {
                     move.x *= myMan.stats.speedFactor;
                     if (move.z > 0)
@@ -139,7 +137,7 @@ namespace LD44.Components.Characters.Brains
                     physics.state.velocity += horizontalVelocity * ftime * 15;
 
                 Vector3f headPos = physics.state.position;
-                if (myMan.onGround && keyboard[Keyboard.HidUsage.Space].down)
+                if (myMan.onGround && scene.game.IsKeyDown(Keyboard.HidUsage.Space))
                 {
                     myMan.DoDamage(myMan.stats.lifeDrainStamina);
                     physics.state.velocity.y = myMan.stats.jumpLaunch;
@@ -184,7 +182,7 @@ namespace LD44.Components.Characters.Brains
                 cameraDistance += (targetCameraDistance - cameraDistance) * EaseIn(ftime * 10);
 
 #if DEBUG
-                if (keyboard[Keyboard.HidUsage.H].down)
+                if (scene.game.IsKeyDown(Keyboard.HidUsage.H))
                 {
                     if (!lockHealthCheat)
                     {
@@ -202,8 +200,8 @@ namespace LD44.Components.Characters.Brains
                     scene.view.Direction + (interpolatedCamDir - scene.view.Direction) * EaseIn(ftime * 10),
                     new Vector3f(0, 1, 0));
 
-                oldMouseX = mouse.x.value;
-                oldMouseY = mouse.y.value;
+                oldMouseX = scene.game.MouseX();
+                oldMouseY = scene.game.MouseY();
             }
         }
 
@@ -218,7 +216,7 @@ namespace LD44.Components.Characters.Brains
         }
 
         public override bool TryingToCast()
-            => mouse.buttons[(int)MouseButton.Right].down;
+            => scene.game.IsMouseDown(Mouse.ButtonSemantic.Right);
 
         public override void CreateDamageDisplay(float displayDamage)
         {

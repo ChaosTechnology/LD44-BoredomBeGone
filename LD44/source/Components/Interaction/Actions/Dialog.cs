@@ -4,6 +4,7 @@ using ChaosFramework.Graphics.OpenGl.Text;
 using ChaosFramework.Math;
 using ChaosFramework.Platform;
 using static ChaosFramework.Math.Clamping;
+using ChaosFramework.Input;
 
 namespace LD44.Components.Interaction.Actions
 {
@@ -95,7 +96,7 @@ namespace LD44.Components.Interaction.Actions
 
         void Interact()
         {
-            if (scene.game.keyboard[ChaosFramework.Input.Keyboard.HidUsage.F].down)
+            if (scene.game.IsKeyDown(Keyboard.HidUsage.F))
             {
                 if (!lockF)
                     currentText++;

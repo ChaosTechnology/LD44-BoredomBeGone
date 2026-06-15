@@ -91,3 +91,9 @@
 [submodule "submodules/ChaosFramework.Input.OpenTK"]
 	path = submodules/ChaosFramework.Input.OpenTK
 	url = ../../ChaosFramework/ChaosFramework.Input.OpenTK.git
+[submodule "submodules/ChaosFramework.Input.RawInput"]
+	path = submodules/ChaosFramework.Input.RawInput
+	url = ../../ChaosFramework/ChaosFramework.Input.RawInput.git
+[submodule "submodules/ChaosFramework.Input.RawInput.Sharp"]
+	path = submodules/ChaosFramework.Input.RawInput.Sharp
+	url = ../../ChaosFramework/ChaosFramework.Input.RawInput.Sharp.git

@@ -2,7 +2,6 @@ using ChaosFramework.Graphics.OpenGl.AssetContainers;
 using ChaosFramework.Components;
 using ChaosFramework.Graphics.Colors;
 using ChaosFramework.Input;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace LD44.Menu
 {
@@ -14,7 +13,6 @@ namespace LD44.Menu
         TextureContainer.Entry hoverTexture;
         bool isHovered = false;
         bool isDown = true; // Down until first update, so menu rebuilds don't trigger repeated presses.
-        Mouse mouse => scene.game.mouse;
 
         protected override void Create(CreateParameters cparams)
         {
@@ -34,7 +32,7 @@ namespace LD44.Menu
                 hover?.Invoke();
 
             txtCol = isHovered ? new Rgba(0.75f, 0, 0, 1) : Rgba.OPAQUE_WHITE;
-            if (mouse.buttons[(int)MouseButton.Left].down && enabled && isHovered)
+            if (scene.game.IsMouseDown(Mouse.ButtonSemantic.Left) && enabled && isHovered)
             {
                 if (!isDown)
                 {

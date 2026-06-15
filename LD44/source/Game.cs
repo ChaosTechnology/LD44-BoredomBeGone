@@ -18,9 +18,20 @@ namespace LD44
     {
         readonly InputContext input;
 
-        public Mouse mouse => input.EnumerateDevices<Mouse>().FirstOrDefault();
-        public Keyboard keyboard => input.EnumerateDevices<Keyboard>().FirstOrDefault();
+        public bool IsKeyDown(Keyboard.HidUsage hidUsage)
+            => input.EnumerateDevices<Keyboard>().Any(keyboard => keyboard[hidUsage].down);
 
+        public bool IsMouseDown(Mouse.ButtonSemantic button)
+            => input.EnumerateDevices<Mouse>().Any(mouse => mouse.buttons[(int)button].down);
+
+        public float MouseX()
+            => input.EnumerateDevices<Mouse>().Sum(mouse => mouse.x.value);
+
+        public float MouseY()
+            => input.EnumerateDevices<Mouse>().Sum(mouse => mouse.y.value);
+
+        public float Scroll()
+            => input.EnumerateDevices<Mouse>().Sum(mouse => mouse.scroll.value);
         public StreamSource assetSource {get; private set; }
 
         internal static void PrepareIO()
@@ -91,7 +102,7 @@ namespace LD44
         {
             input.UpdateInputConsumption();
 
-            bool toggleFullScreen = keyboard[Keyboard.HidUsage.F11].down;
+            bool toggleFullScreen = IsKeyDown(Keyboard.HidUsage.F11);
             if (toggleFullScreen && !lockF11)
             {
                 preventRedrawOnResize = true;

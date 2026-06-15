@@ -2,7 +2,6 @@ using ChaosFramework.Input;
 using ChaosFramework.Platform;
 using System;
 using System.Reflection;
-using System.Windows.Forms;
 
 namespace LD44
 {
@@ -28,8 +27,8 @@ namespace LD44
                 );
 
 #if OS_WINDOWS
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            System.Windows.Forms.Application.EnableVisualStyles();
+            System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
 #endif
             Game.PrepareIO();
 
@@ -43,22 +42,21 @@ namespace LD44
 #if OS_WINDOWS
             WindowsPlatformContext platformContext = new WindowsPlatformContext();
             Window window = ((PlatformContext)platformContext).CreateWindow();
-            Form form = platformContext.GetForm(window);
+            System.Windows.Forms.Form form = platformContext.GetForm(window);
             form.Icon = Properties.Resources.icon;
             form.Text = "Boredom Be Gone";
-            form.MinimumSize = new System.Drawing.Size(800, 450);
-            form.Size = new System.Drawing.Size(settings.deferredShaderSize.x, settings.deferredShaderSize.y);
-            form.BackgroundImageLayout = ImageLayout.Stretch;
-            form.BackgroundImage = new System.Drawing.Bitmap("Assets/LoadingScreen.png");
+            form.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            // TODO: render loading screen again
+            // form.BackgroundImage = new System.Drawing.Bitmap("Assets/LoadingScreen.png");
 
-            Game g = new Game(platformContext, window);
+            Func<InputContext, InputDeviceHost> createHost = _ => new ChaosFramework.Input.RawInput.RawInputDeviceHost(_);
 #else
             GlfwPlatformContext platformContext = new GlfwPlatformContext();
             GlfwPlatformContext.GlfwWindow window = platformContext.CreateWindow();
             Func<InputContext, InputDeviceHost> createHost = _ => new ChaosFramework.Input.OpenTk.DeviceHost(_, window.window);
-            Game g = new Game(platformContext, window, createHost);
 #endif
 
+            Game g = new Game(platformContext, window, createHost);
             g.settings = settings;
             g.Run();
         }

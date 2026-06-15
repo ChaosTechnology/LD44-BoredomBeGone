@@ -45,6 +45,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChaosFramework.Input", "sub
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChaosFramework.Input.OpenTK", "submodules\ChaosFramework.Input.OpenTK\ChaosFramework.Input.OpenTK.csproj", "{6CDA2FEB-0852-44AA-ABBA-B76AA3EA145A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChaosFramework.Input.RawInput", "submodules\ChaosFramework.Input.RawInput\ChaosFramework.Input.RawInput.csproj", "{DE26426E-65EF-41BB-846B-3ED3A6B8E287}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChaosFramework.Input.RawInput.Sharp", "submodules\ChaosFramework.Input.RawInput.Sharp\ChaosFramework.Input.RawInput.Sharp.csproj", "{6ACF9FFF-0B0A-4F49-A541-400D1F58ABFB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChaosUtil.Platform.Windows", "submodules\ChaosUtil.Platform.Windows\ChaosUtil.Platform.Windows.csproj", "{9FFBBF0A-A525-43A3-86D7-889711A1139D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -131,6 +137,18 @@ Global
 		{6CDA2FEB-0852-44AA-ABBA-B76AA3EA145A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6CDA2FEB-0852-44AA-ABBA-B76AA3EA145A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6CDA2FEB-0852-44AA-ABBA-B76AA3EA145A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE26426E-65EF-41BB-846B-3ED3A6B8E287}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE26426E-65EF-41BB-846B-3ED3A6B8E287}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE26426E-65EF-41BB-846B-3ED3A6B8E287}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE26426E-65EF-41BB-846B-3ED3A6B8E287}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6ACF9FFF-0B0A-4F49-A541-400D1F58ABFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6ACF9FFF-0B0A-4F49-A541-400D1F58ABFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6ACF9FFF-0B0A-4F49-A541-400D1F58ABFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6ACF9FFF-0B0A-4F49-A541-400D1F58ABFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FFBBF0A-A525-43A3-86D7-889711A1139D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FFBBF0A-A525-43A3-86D7-889711A1139D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FFBBF0A-A525-43A3-86D7-889711A1139D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FFBBF0A-A525-43A3-86D7-889711A1139D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -155,5 +173,8 @@ Global
 		{6CD6109D-B63A-4A08-B516-D9CE3C3F0097} = {38AAC96B-4F27-49BF-A055-77D74575A42B}
 		{3B397619-8336-43A0-B615-12905389D6DA} = {38AAC96B-4F27-49BF-A055-77D74575A42B}
 		{6CDA2FEB-0852-44AA-ABBA-B76AA3EA145A} = {38AAC96B-4F27-49BF-A055-77D74575A42B}
+		{DE26426E-65EF-41BB-846B-3ED3A6B8E287} = {38AAC96B-4F27-49BF-A055-77D74575A42B}
+		{6ACF9FFF-0B0A-4F49-A541-400D1F58ABFB} = {38AAC96B-4F27-49BF-A055-77D74575A42B}
+		{9FFBBF0A-A525-43A3-86D7-889711A1139D} = {38AAC96B-4F27-49BF-A055-77D74575A42B}
 	EndGlobalSection
 EndGlobal
