@@ -5,6 +5,8 @@ using System.Reflection;
 
 #if !OS_WINDOWS
 using ChaosFramework.Platform.Glfw;
+#else
+using ChaosFramework.Platform.WinForms;
 #endif
 
 namespace LD44
@@ -44,7 +46,7 @@ namespace LD44
                 settings.Save(Settings.FILE);
 
 #if OS_WINDOWS
-            WindowsPlatformContext platformContext = new WindowsPlatformContext();
+            WinFormsPlatformContext platformContext = new WinFormsPlatformContext();
             Window window = ((PlatformContext)platformContext).CreateWindow();
             System.Windows.Forms.Form form = platformContext.GetForm(window);
             form.Icon = Properties.Resources.icon;
