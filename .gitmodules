@@ -100,3 +100,6 @@
 [submodule "submodules/ChaosFramework.Platform.Glfw"]
 	path = submodules/ChaosFramework.Platform.Glfw
 	url = ../../ChaosFramework/ChaosFramework.Platform.Glfw.git
+[submodule "submodules/ChaosFramework.Platform.WinForms"]
+	path = submodules/ChaosFramework.Platform.WinForms
+	url = ../../ChaosFramework/ChaosFramework.Platform.WinForms.git

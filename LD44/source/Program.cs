@@ -3,6 +3,10 @@ using ChaosFramework.Platform;
 using System;
 using System.Reflection;
 
+#if !OS_WINDOWS
+using ChaosFramework.Platform.Glfw;
+#endif
+
 namespace LD44
 {
     static class Program
