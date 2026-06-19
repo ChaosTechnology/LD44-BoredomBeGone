@@ -1,4 +1,3 @@
-using System.DirectoryServices;
 using System.Linq;
 using ChaosFramework.Graphics;
 using ChaosFramework.Graphics.Colors;
