@@ -4,6 +4,8 @@ using ChaosFramework.Graphics.Colors;
 using ChaosFramework.Math;
 using ChaosFramework.Platform;
 using OpenTK.Graphics.OpenGL;
+using ChaosFramework.Input;
+using System.Linq;
 
 namespace LD44.Components
 {
@@ -44,7 +46,7 @@ namespace LD44.Components
 
         void ConsiderSuicide()
         {
-            if (scene.game.keyboard.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.Backspace))
+            if (scene.game.IsKeyDown(Keyboard.HidUsage.Backspace))
             {
                 // what were we thinking?
                 scene.Dispose();

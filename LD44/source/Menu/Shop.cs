@@ -15,6 +15,7 @@ using Rex = System.Text.RegularExpressions;
 
 namespace LD44.Menu
 {
+    using ChaosFramework.Input;
     using Components.Weapons;
     using WeaponAttribute = Components.Weapons.Weapon.WeaponAttribute;
 
@@ -38,7 +39,6 @@ namespace LD44.Menu
         public Shader cursorShader;
         TextureContainer.Entry cursorTex;
 
-        Game.LD44Mouse mouse => this.game.mouse;
         public Vector3f mousePosition, mouseDelta;
         Vector3f oldMouseData;
 
@@ -380,7 +380,7 @@ namespace LD44.Menu
 
         void UpdateCursor()
         {
-            Vector3f newMouseData = new Vector3f(mouse.X, mouse.Y, mouse.WheelPrecise);
+            Vector3f newMouseData = new Vector3f(game.MouseX(), game.MouseY(), game.Scroll() );
             mouseDelta = new Vector3f(MOUSE_SENSITIVITY * (newMouseData.x - oldMouseData.x), -MOUSE_SENSITIVITY * (newMouseData.y - oldMouseData.y), newMouseData.z - oldMouseData.z);
             mousePosition += mouseDelta;
             mousePosition.x = Clamp(-game.window.Ratio(), game.window.Ratio(), mousePosition.x);

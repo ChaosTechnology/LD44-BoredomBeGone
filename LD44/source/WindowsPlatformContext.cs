@@ -1,5 +1,4 @@
 #if OS_WINDOWS
-using ChaosFramework.Components;
 using ChaosFramework.Platform;
 using OpenTK.GLControl;
 using System;
@@ -8,8 +7,7 @@ using System.Windows.Forms;
 namespace LD44
 {
     public class WindowsPlatformContext
-        : MessageQueue
-        , PlatformContext
+        : PlatformContext
         , GlContext
     {
         class WindowsWindow : Window
@@ -23,6 +21,8 @@ namespace LD44
             public WindowsWindow(Form form)
             {
                 this.form = form;
+                form.FormBorderStyle = FormBorderStyle.None;
+                form.Bounds = Screen.PrimaryScreen.Bounds;
                 control = new GLControl();
                 control.Bounds = form.ClientRectangle;
                 control.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom;
@@ -47,17 +47,21 @@ namespace LD44
             return window;
         }
 
+        Overhead PlatformContext.messageQueue => Overhead;
+
         GlContext PlatformContext.glContext => this;
 
         public event Action Terminate;
 
-        void MessageQueue.ProcessMessages()
-        {
-            Application.DoEvents();
-        }
-
         void GlContext.Init()
         {
+        }
+
+        void Overhead()
+        {
+            Application.DoEvents();
+            Cursor.Hide();
+            Cursor.Position = Screen.PrimaryScreen.Bounds.Location;
         }
 
         void RaiseTerminate(object _, EventArgs __)
