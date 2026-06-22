@@ -8,4 +8,4 @@ SolutionDir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")/"
 cd "$SolutionDir"
 
 bash ./build.sh
-SolutionDir=$SolutionDir bash -c 'dotnet run "./LD44.sln" --project "./LD44/" --framework net8.0-windows --configuration Debug'
+SolutionDir="$SolutionDir" bash -c 'dotnet run "./LD44.sln" --project "./LD44/" --framework net8.0-windows --configuration Debug'
