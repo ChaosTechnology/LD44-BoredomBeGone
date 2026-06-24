@@ -49,7 +49,7 @@ namespace LD44
         public Graphics graphics;
         public Settings settings;
         public Audio audio;
-        public Window window;
+        public PresentationContext window;
 
         Music music;
 
@@ -61,7 +61,7 @@ namespace LD44
 
         enum InputLayers { _ }
 
-        public Game(PlatformContext platformContext, Window window, System.Func<InputContext, InputDeviceHost> createInputContext)
+        public Game(PlatformContext platformContext, PresentationContext window, System.Func<InputContext, InputDeviceHost> createInputContext)
             : base(platformContext.messageQueue)
         {
             this.window = window;

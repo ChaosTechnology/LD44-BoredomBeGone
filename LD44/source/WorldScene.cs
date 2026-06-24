@@ -295,7 +295,7 @@ namespace LD44
 
         void PrepareSky()
         {
-            GL.Viewport(0, 0, game.window.width, game.window.height);
+            GL.Viewport(0, 0, (int)game.window.width, (int)game.window.height);
             Graphics.ThrowErrors();
             game.graphics.stateTracker.BindFramebuffer(FramebufferTarget.Framebuffer, null);
         }
@@ -305,7 +305,7 @@ namespace LD44
 
         void Present()
         {
-            GL.Viewport(0, 0, game.window.width, game.window.height);
+            GL.Viewport(0, 0, (int)game.window.width, (int)game.window.height);
             Graphics.ThrowErrors();
             game.graphics.stateTracker.BindFramebuffer(FramebufferTarget.Framebuffer, null);
             antiEdger.normalFactor = 6f;

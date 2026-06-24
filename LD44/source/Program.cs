@@ -58,8 +58,8 @@ namespace LD44
             Func<InputContext, InputDeviceHost> createHost = _ => new ChaosFramework.Input.RawInput.RawInputDeviceHost(_);
 #else
             GlfwPlatformContext platformContext = new GlfwPlatformContext();
-            GlfwPlatformContext.GlfwWindow window = platformContext.CreateWindow();
-            Func<InputContext, InputDeviceHost> createHost = _ => new ChaosFramework.Input.OpenTk.DeviceHost(_, window.window);
+            GlfwFullscreen window = platformContext.CreateFullscreen("LD44-BoredomBeGone");
+            Func<InputContext, InputDeviceHost> createHost = context => new ChaosFramework.Input.OpenTk.DeviceHost(context, window.window);
 #endif
 
             Game g = new Game(platformContext, window, createHost);
