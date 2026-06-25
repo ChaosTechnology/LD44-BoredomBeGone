@@ -45,12 +45,12 @@ namespace LD44
             if (!hadSettings)
                 settings.Save(Settings.FILE);
 
+            string title = "LD44-BoredomBeGone";
 #if OS_WINDOWS
             WinFormsPlatformContext platformContext = new WinFormsPlatformContext();
-            Window window = ((PlatformContext)platformContext).CreateWindow();
+            Fullscreen window = ((PlatformContext)platformContext).CreateFullscreen(title);
             System.Windows.Forms.Form form = platformContext.GetForm(window);
             form.Icon = Properties.Resources.icon;
-            form.Text = "Boredom Be Gone";
             form.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             // TODO: render loading screen again
             // form.BackgroundImage = new System.Drawing.Bitmap("Assets/LoadingScreen.png");
@@ -58,7 +58,7 @@ namespace LD44
             Func<InputContext, InputDeviceHost> createHost = _ => new ChaosFramework.Input.RawInput.RawInputDeviceHost(_);
 #else
             GlfwPlatformContext platformContext = new GlfwPlatformContext();
-            GlfwFullscreen window = platformContext.CreateFullscreen("LD44-BoredomBeGone");
+            GlfwFullscreen window = platformContext.CreateFullscreen(title);
             Func<InputContext, InputDeviceHost> createHost = context => new ChaosFramework.Input.OpenTk.DeviceHost(context, window.window);
 #endif
 
