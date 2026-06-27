@@ -2,6 +2,8 @@ using ChaosFramework.Input;
 using ChaosFramework.Platform;
 using System;
 using System.Reflection;
+using System.Linq;
+
 
 #if !OS_WINDOWS
 using ChaosFramework.Platform.Glfw;
@@ -58,7 +60,7 @@ namespace LD44
             Func<InputContext, InputDeviceHost> createHost = _ => new ChaosFramework.Input.RawInput.RawInputDeviceHost(_);
 #else
             GlfwPlatformContext platformContext = new GlfwPlatformContext();
-            GlfwFullscreen window = platformContext.CreateFullscreen(title);
+            GlfwFullscreen window = platformContext.CreateFullscreen(title, platformContext.EnumerateMonitors().First());
             Func<InputContext, InputDeviceHost> createHost = context => new ChaosFramework.Input.OpenTk.DeviceHost(context, window.window);
 #endif
 
