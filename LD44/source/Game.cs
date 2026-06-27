@@ -165,7 +165,7 @@ namespace LD44
                     // allocate the file preemptively for name resolution sake
                     Stream targetStr = outFile.Create();
 
-                    Rgba8Image img = TextureUtils.TakeScreenshot(graphics, Draw);
+                    Rgba8Image img = graphics.TakeScreenshot(Draw);
                     backgroundWork.Add(Task.Run(() =>
                     {
                         using (targetStr)
