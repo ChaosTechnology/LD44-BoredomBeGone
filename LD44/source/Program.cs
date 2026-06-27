@@ -60,7 +60,7 @@ namespace LD44
             Func<InputContext, InputDeviceHost> createHost = _ => new ChaosFramework.Input.RawInput.RawInputDeviceHost(_);
 #else
             GlfwPlatformContext platformContext = new GlfwPlatformContext();
-            GlfwFullscreen window = platformContext.CreateFullscreen(title, platformContext.EnumerateMonitors().First());
+            GlfwFullscreen window = platformContext.CreateFullscreen(title, platformContext.PrimaryMonitor);
             Func<InputContext, InputDeviceHost> createHost = context => new ChaosFramework.Input.OpenTk.DeviceHost(context, window.window);
 #endif
 
