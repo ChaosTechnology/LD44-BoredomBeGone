@@ -1,21 +1,29 @@
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using ChaosFramework.Collections;
+using ChaosFramework.Components;
+using ChaosFramework.Graphics.Imaging;
+using ChaosFramework.Graphics.Imaging.Formats;
 using ChaosFramework.Graphics.OpenGl;
 using ChaosFramework.Graphics.OpenGl.AssetContainers;
-using ChaosFramework.Components;
+using ChaosFramework.Input;
+using ChaosFramework.Input.InputEvents;
 using ChaosFramework.IO.Streams;
 using ChaosFramework.Math.Vectors;
 using ChaosFramework.Physics;
 using ChaosFramework.Platform;
 using ChaosFramework.Sound;
 using ChaosFramework.Sound.OpenAL;
-using ChaosFramework.Input;
 using ChaosUtil.Serialization.Text;
 using OpenTK.Graphics.OpenGL;
-using System.Linq;
 
 namespace LD44
 {
     public class Game : BaseGame
     {
+        enum InputLayers { One }
+
         readonly InputContext input;
 
         public bool IsKeyDown(Keyboard.HidUsage hidUsage)
@@ -59,7 +67,7 @@ namespace LD44
 
         bool lockF11;
 
-        enum InputLayers { _ }
+        readonly AdvancedLinkedList<Task> backgroundWork = [];
 
         public Game(PlatformContext platformContext, PresentationContext window, System.Func<InputContext, InputDeviceHost> createInputContext)
             : base(platformContext.messageQueue)
@@ -102,6 +110,8 @@ namespace LD44
         {
             input.UpdateInputConsumption();
 
+            input.AddHandler<InputPushEvent<Keyboard.Key>, Keyboard.Key, InputChange>(InputLayers.One, TakeScreenshot);
+
             bool toggleFullScreen = IsKeyDown(Keyboard.HidUsage.F11);
             if (toggleFullScreen && !lockF11)
             {
@@ -110,6 +120,10 @@ namespace LD44
                 preventRedrawOnResize = false;
             }
             lockF11 = toggleFullScreen;
+
+            foreach(Task t in backgroundWork)
+                if (t.IsCompleted)
+                    backgroundWork.RemoveCurrent();
 
             base.Update();
 
@@ -128,8 +142,47 @@ namespace LD44
             window.Present();
         }
 
+        bool TakeScreenshot(InputPushEvent<Keyboard.Key> e)
+        {
+            if (e.axis.hidKey == Keyboard.HidUsage.P)
+            {
+                string picFolder = System.Environment.GetFolderPath(
+                    System.Environment.SpecialFolder.MyPictures,
+                    System.Environment.SpecialFolderOption.None
+                    );
+                if (Directory.Exists(picFolder))
+                {
+                    DirectoryInfo outFolder = new(Path.GetFullPath(picFolder) + "/ChaosTechnology/LD44-BoredomBeGone/");
+                    FileInfo outFile;
+                    if (outFolder.Exists)
+                        for (uint i = 0; (outFile = new FileInfo($"{outFolder.FullName}/{i}.png")).Exists; ++i);
+                    else
+                    {
+                        outFolder.Create();
+                        outFile = new FileInfo($"{outFolder.FullName}/0.png");
+                    }
+
+                    // allocate the file preemptively for name resolution sake
+                    Stream targetStr = outFile.Create();
+
+                    Rgba8Image img = TextureUtils.TakeScreenshot(graphics, Draw);
+                    backgroundWork.Add(Task.Run(() =>
+                    {
+                        using (targetStr)
+                            Png.Save(img, targetStr);
+                    }));
+                    return true;
+                }
+            }
+            return false;
+        }
+
         protected override void DoDispose()
         {
+            foreach(Task t in backgroundWork)
+                t.Wait();
+            backgroundWork.Clear();
+
             base.DoDispose();
             platformContext.Terminate -= Terminate;
             textures?.Dispose();
