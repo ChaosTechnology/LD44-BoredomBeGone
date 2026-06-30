@@ -1,9 +1,11 @@
-using ChaosFramework.Input;
-using ChaosFramework.Platform;
 using System;
-using System.Reflection;
+using System.IO;
 using System.Linq;
-
+using System.Reflection;
+using ChaosFramework.Input;
+using ChaosFramework.Graphics.Imaging;
+using ChaosFramework.Graphics.Imaging.Formats;
+using ChaosFramework.Platform;
 
 #if !OS_WINDOWS
 using ChaosFramework.Platform.Glfw;
@@ -48,6 +50,7 @@ namespace LD44
                 settings.Save(Settings.FILE);
 
             string title = "LD44-BoredomBeGone";
+
 #if OS_WINDOWS
             WinFormsPlatformContext platformContext = new WinFormsPlatformContext();
             WinFormsFullscreen window = platformContext.CreateFullscreen(title, platformContext.PrimaryMontior);
@@ -56,6 +59,15 @@ namespace LD44
 #else
             GlfwPlatformContext platformContext = new GlfwPlatformContext();
             GlfwFullscreen window = platformContext.CreateFullscreen(title, platformContext.PrimaryMonitor);
+            try
+            {
+                using (MemoryStream str = new(Properties.Resources.icon))
+                    window.SetIcon(Icon.FromStream(str));
+            }
+            catch(OpenTK.Windowing.GraphicsLibraryFramework.GLFWException)
+            {
+                // TODO: proper error handling using glfw error callbacks
+            }
             Func<InputContext, InputDeviceHost> createHost = context => new ChaosFramework.Input.OpenTk.DeviceHost(context, window.window);
 #endif
 
