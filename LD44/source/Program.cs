@@ -53,23 +53,14 @@ namespace LD44
 
 #if OS_WINDOWS
             WinFormsPlatformContext platformContext = new WinFormsPlatformContext();
-            WinFormsFullscreen window = platformContext.CreateFullscreen(title, platformContext.PrimaryMontior);
-            window.SetIcon(Properties.Resources.icon);
+            PresentationContext window = platformContext.CreateFullscreen(title, platformContext.PrimaryMontior);
             Func<InputContext, InputDeviceHost> createHost = _ => new ChaosFramework.Input.RawInput.RawInputDeviceHost(_);
 #else
             GlfwPlatformContext platformContext = new GlfwPlatformContext();
-            GlfwFullscreen window = platformContext.CreateFullscreen(title, platformContext.PrimaryMonitor);
-            try
-            {
-                using (MemoryStream str = new(Properties.Resources.icon))
-                    window.SetIcon(Icon.FromStream(str));
-            }
-            catch(OpenTK.Windowing.GraphicsLibraryFramework.GLFWException)
-            {
-                // TODO: proper error handling using glfw error callbacks
-            }
-            Func<InputContext, InputDeviceHost> createHost = context => new ChaosFramework.Input.OpenTk.DeviceHost(context, window.window);
+            PresentationContext window = platformContext.CreateFullscreen(title, platformContext.PrimaryMonitor);
+            Func<InputContext, InputDeviceHost> createHost = context => new ChaosFramework.Input.OpenTk.DeviceHost(context, ((GlfwFullscreen)window).window);
 #endif
+            window.SetIcon(new ApplicationIcon(ApplicationIcon.IconFormat.ico, () => new MemoryStream(Properties.Resources.icon)));
 
             // TODO: render loading screen again
             Game g = new Game(platformContext, window, createHost);
