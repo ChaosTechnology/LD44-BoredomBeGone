@@ -1,13 +1,8 @@
 using System;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using ChaosFramework.Input;
-using ChaosFramework.Graphics.Imaging;
-using ChaosFramework.Graphics.Imaging.Formats;
 using ChaosFramework.Platform;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-
 
 #if !OS_WINDOWS
 using ChaosFramework.Platform.Glfw;
@@ -63,7 +58,12 @@ namespace LD44
             PresentationContext window = platformContext.CreateFullscreen(title, platformContext.PrimaryMonitor);
             Func<InputContext, InputDeviceHost> createHost = context => new ChaosFramework.Input.OpenTk.DeviceHost(context, ((GlfwFullscreen)window).window);
 #endif
-            window.SetIcon(new ApplicationIcon(ApplicationIcon.IconFormat.ico, () => new MemoryStream(Properties.Resources.icon)));
+
+            window.SetIcon(
+                new ApplicationIcon(
+                    ApplicationIcon.IconFormat.ico,
+                    () => Properties.Resources.ResourceManager.GetStream(nameof(Properties.Resources.icon)))
+                    );
 
             // TODO: render loading screen again
             Game g = new Game(platformContext, window, createHost);
