@@ -6,6 +6,8 @@ using ChaosFramework.Input;
 using ChaosFramework.Graphics.Imaging;
 using ChaosFramework.Graphics.Imaging.Formats;
 using ChaosFramework.Platform;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+
 
 #if !OS_WINDOWS
 using ChaosFramework.Platform.Glfw;
@@ -58,16 +60,12 @@ namespace LD44
             Func<InputContext, InputDeviceHost> createHost = _ => new ChaosFramework.Input.RawInput.RawInputDeviceHost(_);
 #else
             GlfwPlatformContext platformContext = new GlfwPlatformContext();
+            platformContext.errorHandler.AddHandler(SettingIconNotSupportedHandler);
+
             GlfwFullscreen window = platformContext.CreateFullscreen(title, platformContext.PrimaryMonitor);
-            try
-            {
-                using (MemoryStream str = new(Properties.Resources.icon))
-                    window.SetIcon(Icon.FromStream(str));
-            }
-            catch(OpenTK.Windowing.GraphicsLibraryFramework.GLFWException)
-            {
-                // TODO: proper error handling using glfw error callbacks
-            }
+            using (MemoryStream str = new(Properties.Resources.icon))
+                window.SetIcon(Icon.FromStream(str));
+
             Func<InputContext, InputDeviceHost> createHost = context => new ChaosFramework.Input.OpenTk.DeviceHost(context, window.window);
 #endif
 
@@ -76,5 +74,20 @@ namespace LD44
             g.settings = settings;
             g.Run();
         }
+
+#if !OS_WINDOWS
+        static bool SettingIconNotSupportedHandler(ErrorCode errorCode, string message)
+        {
+            // here's hoping that this error message never gets localized
+            if (errorCode == ErrorCode.FeatureUnavailable && message.Contains("The platform does not support setting the window icon"))
+            {
+                Console.WriteLine("Couldn't set icon for Glfw presentation context.");
+                Console.WriteLine(message);
+                return true;
+            }
+
+            return false;
+        }
+#endif
     }
 }
