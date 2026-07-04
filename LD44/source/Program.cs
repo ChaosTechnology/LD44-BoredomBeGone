@@ -54,7 +54,6 @@ namespace LD44
             Func<InputContext, InputDeviceHost> createHost = _ => new ChaosFramework.Input.RawInput.RawInputDeviceHost(_);
 #else
             GlfwPlatformContext platformContext = new GlfwPlatformContext();
-            platformContext.errorHandler.AddHandler(SettingIconNotSupportedHandler);
             PresentationContext window = platformContext.CreateFullscreen(title, platformContext.PrimaryMonitor);
             Func<InputContext, InputDeviceHost> createHost = context => new ChaosFramework.Input.OpenTk.DeviceHost(context, ((GlfwFullscreen)window).window);
 #endif
@@ -70,20 +69,5 @@ namespace LD44
             g.settings = settings;
             g.Run();
         }
-
-#if !OS_WINDOWS
-        static bool SettingIconNotSupportedHandler(ErrorCode errorCode, string message)
-        {
-            // here's hoping that this error message never gets localized
-            if (errorCode == ErrorCode.FeatureUnavailable && message.Contains("The platform does not support setting the window icon"))
-            {
-                Console.WriteLine("Couldn't set icon for Glfw presentation context.");
-                Console.WriteLine(message);
-                return true;
-            }
-
-            return false;
-        }
-#endif
     }
 }
