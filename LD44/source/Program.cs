@@ -1,9 +1,8 @@
-using ChaosFramework.Input;
-using ChaosFramework.Platform;
 using System;
 using System.Reflection;
-using System.Linq;
-
+using ChaosFramework.Input;
+using ChaosFramework.Platform;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 #if !OS_WINDOWS
 using ChaosFramework.Platform.Glfw;
@@ -48,16 +47,22 @@ namespace LD44
                 settings.Save(Settings.FILE);
 
             string title = "LD44-BoredomBeGone";
+
 #if OS_WINDOWS
             WinFormsPlatformContext platformContext = new WinFormsPlatformContext();
-            WinFormsFullscreen window = platformContext.CreateFullscreen(title, platformContext.PrimaryMontior);
-            window.SetIcon(Properties.Resources.icon);
+            PresentationContext window = platformContext.CreateFullscreen(title, platformContext.PrimaryMontior);
             Func<InputContext, InputDeviceHost> createHost = _ => new ChaosFramework.Input.RawInput.RawInputDeviceHost(_);
 #else
             GlfwPlatformContext platformContext = new GlfwPlatformContext();
-            GlfwFullscreen window = platformContext.CreateFullscreen(title, platformContext.PrimaryMonitor);
-            Func<InputContext, InputDeviceHost> createHost = context => new ChaosFramework.Input.OpenTk.DeviceHost(context, window.window);
+            PresentationContext window = platformContext.CreateFullscreen(title, platformContext.PrimaryMonitor);
+            Func<InputContext, InputDeviceHost> createHost = context => new ChaosFramework.Input.OpenTk.DeviceHost(context, ((GlfwFullscreen)window).window);
 #endif
+
+            window.SetIcon(
+                new ApplicationIcon(
+                    ApplicationIcon.IconFormat.ico,
+                    () => Properties.Resources.ResourceManager.GetStream(nameof(Properties.Resources.icon)))
+                    );
 
             // TODO: render loading screen again
             Game g = new Game(platformContext, window, createHost);
