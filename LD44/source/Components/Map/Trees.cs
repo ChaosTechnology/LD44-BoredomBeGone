@@ -15,6 +15,8 @@ using System.Linq;
 using SysCol = System.Collections.Generic;
 using static ChaosFramework.Math.Constants;
 using static ChaosFramework.Math.Signs;
+using ChaosFramework.Graphics.Imaging;
+using ChaosFramework.Graphics.Imaging.Formats;
 
 namespace LD44.Components.Map
 {
@@ -41,17 +43,18 @@ namespace LD44.Components.Map
             LinkedList<Vector3f> branchOrigins = BranchOrigins(mesh.content.data);
             MeshShape collisionBase = new MeshShape(mesh.content.data.pos.ToArray(), true);
 
-            using (System.IO.Stream str = Game.assetSource.OpenRead("textures/map/mapBounds.png"))
-            using (System.Drawing.Bitmap bm = new System.Drawing.Bitmap(str))
+            using (System.IO.Stream str = scene.game.assetSource.OpenRead("Textures/Map/MapBounds.png"))
             {
-                byte[] data = BitmapUtils.GetBitmapBytes(bm);
-                int width = bm.Width;
-                int height = bm.Height;
+                Rgba8Image bm = Png.FromStream(str);
+                uint width = bm.w;
+                uint height = bm.h;
 
                 for (int i = 0; i < NUM_TREES; i++)
                 {
                     Vector2f rnd = new Vector2f(Random.instance.Rnd(1), Random.instance.Rnd(1));
-                    byte discardChance = data[4 * ((int)(width * rnd.x) + width * (int)(rnd.y * height)) + 1];
+                    uint x = (uint)(rnd.x * width);
+                    uint y = (uint)(rnd.y * height);
+                    byte discardChance = bm[x, y].g;
                     if (Random.instance.RndByte() >= discardChance)
                         continue;
 

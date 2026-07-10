@@ -19,8 +19,8 @@ namespace LD44.Transparents
 
         protected override void Create(CreateParameters cparams)
             => base.Create(new Params(
-                ((Game)scene.game).shaders.Load("shaders/fire.fx", this),
-                ((Game)scene.game).textures.Load("Textures/particles/fireparticle.png", this),
+                ((Game)scene.game).shaders.Load("Shaders/Fire.fx", this),
+                ((Game)scene.game).textures.Load("Textures/Particles/FireParticle.png", this),
                 1,
                 ((WorldScene)scene).view,
                 MAX_PARTICLES,

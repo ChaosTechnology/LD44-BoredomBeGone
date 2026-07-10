@@ -2,7 +2,10 @@ using ChaosFramework.Graphics.OpenGl.AssetContainers;
 using ChaosFramework.Components;
 using ChaosFramework.Graphics.Colors;
 using ChaosFramework.Math;
+using ChaosFramework.Platform;
 using OpenTK.Graphics.OpenGL;
+using ChaosFramework.Input;
+using System.Linq;
 
 namespace LD44.Components
 {
@@ -43,16 +46,16 @@ namespace LD44.Components
 
         void ConsiderSuicide()
         {
-            if (scene.game.keyboard.IsKeyDown(OpenTK.Input.Key.BackSpace))
+            if (scene.game.IsKeyDown(Keyboard.HidUsage.Backspace))
             {
                 // what were we thinking?
                 scene.Dispose();
-                GL.ClearColor(new OpenTK.Graphics.Color4(0, 0, 0, 0));
+                GL.ClearColor(0, 0, 0, 0);
                 ChaosFramework.Graphics.OpenGl.Graphics.ThrowErrors();
                 GL.Clear(ClearBufferMask.ColorBufferBit);
                 ChaosFramework.Graphics.OpenGl.Graphics.ThrowErrors();
                 DrawLoadingScreen();
-                scene.game.graphics.graphicsContext.SwapBuffers();
+                scene.game.window.Present();
                 scene.game.scenes.Add(new WorldScene(scene.game));
                 Dispose();
                 return;
@@ -64,7 +67,7 @@ namespace LD44.Components
             TextureContainer.Entry tmpTex = texture;
             Bounds2f tmpBounds = bounds;
             texture = loadingScreen;
-            bounds = new Bounds2f(-scene.game.graphics.ratio, -1, scene.game.graphics.ratio, 1);
+            bounds = new Bounds2f(-scene.game.window.Ratio(), -1, scene.game.window.Ratio(), 1);
             DrawControl();
             texture = tmpTex;
             bounds = tmpBounds;

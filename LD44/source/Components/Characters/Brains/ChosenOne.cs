@@ -1,8 +1,11 @@
+using System.Linq;
 using ChaosFramework.Graphics;
 using ChaosFramework.Graphics.Colors;
 using ChaosFramework.Graphics.Text;
+using ChaosFramework.Input;
 using ChaosFramework.Math;
 using ChaosFramework.Math.Vectors;
+using ChaosFramework.Platform;
 using static ChaosFramework.Math.Clamping;
 using static ChaosFramework.Math.Constants;
 using static ChaosFramework.Math.Exponentials;
@@ -47,7 +50,7 @@ namespace LD44.Components.Characters.Brains
         public override void TakeControl()
         {
             healthBar = myMan.AddComponent<Menu.Control<WorldScene>>();
-            healthBar.bounds = new Bounds2f(myMan.scene.game.graphics.ratio - 0.3f, 0.9f, myMan.scene.game.graphics.ratio, 1);
+            healthBar.bounds = new Bounds2f(myMan.scene.game.window.Ratio() - 0.3f, 0.9f, myMan.scene.game.window.Ratio(), 1);
             healthBar.texture = null;
             healthBar.text = new Menu.Text[] { new Menu.Text(myMan.scene, (drawnHealth = myMan.health).ToString(), Align.Right) };
         }
@@ -57,10 +60,10 @@ namespace LD44.Components.Characters.Brains
 
         public override void Input()
         {
-            if (ftime > 0 && scene.game.mouse.LeftButton == OpenTK.Input.ButtonState.Pressed && myMan.mainHandWeapon != null)
+            if (ftime > 0 && scene.game.IsMouseDown(Mouse.ButtonSemantic.Left) && myMan.mainHandWeapon != null)
             {
-                float dX = scene.game.mouse.X - oldMouseX;
-                float dY = scene.game.mouse.Y - oldMouseY;
+                float dX = scene.game.MouseX() - oldMouseX;
+                float dY = scene.game.MouseY() - oldMouseY;
 
                 myMan.armRotationSpeed += (new Vector2f(-dX * 0.005f / ftime, dY * 0.005f / ftime) - myMan.armRotationSpeed)
                                           * ftime
@@ -73,11 +76,11 @@ namespace LD44.Components.Characters.Brains
         {
             if (!interacting)
             {
-                float dX = scene.game.mouse.X - oldMouseX;
-                float dY = scene.game.mouse.Y - oldMouseY;
-                float dZ = scene.game.mouse.WheelPrecise - oldMouseZ;
+                float dX = scene.game.MouseX() - oldMouseX;
+                float dY = scene.game.MouseY() - oldMouseY;
+                float dZ = scene.game.Scroll() - oldMouseZ;
 
-                if (scene.game.mouse.LeftButton != OpenTK.Input.ButtonState.Pressed)
+                if (!scene.game.IsMouseDown(Mouse.ButtonSemantic.Left))
                 {
                     physics.state.baseTransform *= Matrix.RotationY(dX * MOUSE_SENS_X * ftime);
                     verticalView += dY * ftime * MOUSE_SENS_Y;
@@ -92,31 +95,31 @@ namespace LD44.Components.Characters.Brains
                 else
                     camDist = Clamp(MIN_ZOOM, MAX_ZOOM, camDist - zoomDelta);
 
-                oldMouseZ = scene.game.mouse.WheelPrecise;
+                oldMouseZ = scene.game.Scroll();
 
                 Matrix m = physics.state.GetTransform();
                 Vector3f localX = Vector3f.Normalize(m.row0.x0z);
                 Vector3f localZ = Vector3f.Normalize(m.row2.x0z);
 
-                if (scene.game.keyboard.IsKeyDown(OpenTK.Input.Key.T))
+                if (scene.game.IsKeyDown(Keyboard.HidUsage.T))
                     autorun = true;
 
                 Vector3f move = Vector3f.EMPTY;
                 if (myMan.onGround)
                 {
-                    if (scene.game.keyboard.IsKeyDown(OpenTK.Input.Key.A)) { move -= localX; autorun = false; }
-                    if (scene.game.keyboard.IsKeyDown(OpenTK.Input.Key.D)) { move += localX; autorun = false; }
-                    if (scene.game.keyboard.IsKeyDown(OpenTK.Input.Key.S)) { move -= localZ; autorun = false; }
-                    if (autorun || scene.game.keyboard.IsKeyDown(OpenTK.Input.Key.W)) move += localZ;
-                    if (!lockF && scene.game.keyboard.IsKeyDown(OpenTK.Input.Key.F))
+                    if (scene.game.IsKeyDown(Keyboard.HidUsage.A)) { move -= localX; autorun = false; }
+                    if (scene.game.IsKeyDown(Keyboard.HidUsage.D)) { move += localX; autorun = false; }
+                    if (scene.game.IsKeyDown(Keyboard.HidUsage.S)) { move -= localZ; autorun = false; }
+                    if (autorun || scene.game.IsKeyDown(Keyboard.HidUsage.W)) move += localZ;
+                    if (!lockF && scene.game.IsKeyDown(Keyboard.HidUsage.F))
                         lockF = triesToInteract = true;
-                    else if (!scene.game.keyboard.IsKeyDown(OpenTK.Input.Key.F))
+                    else if (!scene.game.IsKeyDown(Keyboard.HidUsage.F))
                         lockF = triesToInteract = false;
                 }
 
                 move.Normalize();
                 move *= myMan.stats.walkingSpeed;
-                if (scene.game.keyboard.IsKeyDown(OpenTK.Input.Key.ShiftLeft))
+                if (scene.game.IsKeyDown(Keyboard.HidUsage.ShiftLeft))
                 {
                     move.x *= myMan.stats.speedFactor;
                     if (move.z > 0)
@@ -133,7 +136,7 @@ namespace LD44.Components.Characters.Brains
                     physics.state.velocity += horizontalVelocity * ftime * 15;
 
                 Vector3f headPos = physics.state.position;
-                if (myMan.onGround && scene.game.keyboard.IsKeyDown(OpenTK.Input.Key.Space))
+                if (myMan.onGround && scene.game.IsKeyDown(Keyboard.HidUsage.Space))
                 {
                     myMan.DoDamage(myMan.stats.lifeDrainStamina);
                     physics.state.velocity.y = myMan.stats.jumpLaunch;
@@ -178,7 +181,7 @@ namespace LD44.Components.Characters.Brains
                 cameraDistance += (targetCameraDistance - cameraDistance) * EaseIn(ftime * 10);
 
 #if DEBUG
-                if (scene.game.keyboard.IsKeyDown(OpenTK.Input.Key.H))
+                if (scene.game.IsKeyDown(Keyboard.HidUsage.H))
                 {
                     if (!lockHealthCheat)
                     {
@@ -196,8 +199,8 @@ namespace LD44.Components.Characters.Brains
                     scene.view.Direction + (interpolatedCamDir - scene.view.Direction) * EaseIn(ftime * 10),
                     new Vector3f(0, 1, 0));
 
-                oldMouseX = scene.game.mouse.X;
-                oldMouseY = scene.game.mouse.Y;
+                oldMouseX = scene.game.MouseX();
+                oldMouseY = scene.game.MouseY();
             }
         }
 
@@ -208,11 +211,11 @@ namespace LD44.Components.Characters.Brains
             if (diff < 0) drawnHealth = Max(myMan.health, drawnHealth);
             if (diff > 0) drawnHealth = Min(myMan.health, drawnHealth);
             healthBar.text[0].text = ((int)drawnHealth).ToString();
-            healthBar.bounds = new Bounds2f(myMan.scene.game.graphics.ratio - 0.3f, 0.9f, myMan.scene.game.graphics.ratio, 1);
+            healthBar.bounds = new Bounds2f(myMan.scene.game.window.Ratio() - 0.3f, 0.9f, myMan.scene.game.window.Ratio(), 1);
         }
 
         public override bool TryingToCast()
-            => myMan.scene.game.mouse.RightButton == OpenTK.Input.ButtonState.Pressed;
+            => scene.game.IsMouseDown(Mouse.ButtonSemantic.Right);
 
         public override void CreateDamageDisplay(float displayDamage)
         {

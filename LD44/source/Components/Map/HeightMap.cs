@@ -1,11 +1,9 @@
 using ChaosFramework.Shapes.Convex;
 using ChaosFramework.Graphics.OpenGl.AssetContainers;
-using ChaosFramework.Graphics;
 using ChaosFramework.Graphics.OpenGl;
 using ChaosFramework.Graphics.OpenGl.Model;
 using ChaosFramework.Collections;
 using ChaosFramework.Components;
-using ChaosFramework.Graphics.Colors;
 using ChaosFramework.Graphics.OpenGl.ChaosShader;
 using ChaosFramework.Math;
 using ChaosFramework.Math.Vectors;
@@ -13,6 +11,9 @@ using ChaosFramework.Physics;
 using OpenTK.Graphics.OpenGL;
 using System.Linq;
 using System.IO;
+using ChaosFramework.Graphics.Imaging.Formats;
+using ChaosFramework.Graphics.Imaging;
+using System;
 
 namespace LD44.Components.Map
 {
@@ -31,11 +32,11 @@ namespace LD44.Components.Map
             => mapfileRegex.IsMatch(str);
 
         // TODO: Lazy<Programmer> detected
-        static System.Lazy<byte[]> blackFallback = new System.Lazy<byte[]>(() =>
-            BitmapUtils.CreateSingleColorImageData(Rgba.OPAQUE_BLACK, matmapsz, matmapsz, matmapsz * 4)
+        static System.Lazy<Func<RawDataHandle>> blackFallback = new System.Lazy<Func<RawDataHandle>>(() =>
+            Rgba8Image.CreateEmpty(matmapsz, matmapsz).GetRawData
             );
 
-        static byte[] SelectOrFallback(byte[] x)
+        static Func<RawDataHandle> SelectOrFallback(Func<RawDataHandle> x)
             => x ?? blackFallback.Value;
 
         static Vector3f EpaCellSupport(Vector3f searchDirection, MeshShape cellShape)
@@ -66,25 +67,20 @@ namespace LD44.Components.Map
         {
             mapmap = scene.game.textures.Load("Textures/Map/MapMap.png", this);
 
-            LinkedList<byte[][]> tex = new LinkedList<byte[][]>();
-            foreach (string matKey in Game.assetSource.EnumerateKeys().Where(IsMapFile))
+            LinkedList<Func<RawDataHandle>[]> tex = new LinkedList<Func<RawDataHandle>[]>();
+            foreach (string matKey in scene.game.assetSource.EnumerateKeys().Where(IsMapFile))
             {
-                byte[][] matTex = new byte[4][];
+                Func<RawDataHandle>[] matTex = new Func<RawDataHandle>[4];
                 tex.Add(matTex);
 
-                using (Stream matStr = Game.assetSource.OpenRead(matKey))
+                using (Stream matStr = scene.game.assetSource.OpenRead(matKey))
                 using (StreamReader matRd = new StreamReader(matStr))
                 {
                     Material.LayerKeys meta = Material.Parse(matRd, matKey);
-                    int x = matmapsz, y = matmapsz;
-                    matTex[0] = meta.normal == null ? null : BitmapUtils.GetPixelData(Game.assetSource.OpenRead(meta.normal), out x, out y, false);
-                    System.Diagnostics.Debug.Assert(x == matmapsz && y == matmapsz);
-                    matTex[1] = meta.emissive == null ? null : BitmapUtils.GetPixelData(Game.assetSource.OpenRead(meta.emissive), out x, out y, false);
-                    System.Diagnostics.Debug.Assert(x == matmapsz && y == matmapsz);
-                    matTex[2] = meta.diffuse == null ? null : BitmapUtils.GetPixelData(Game.assetSource.OpenRead(meta.diffuse), out x, out y, false);
-                    System.Diagnostics.Debug.Assert(x == matmapsz && y == matmapsz);
-                    matTex[3] = meta.specular == null ? null : BitmapUtils.GetPixelData(Game.assetSource.OpenRead(meta.specular), out x, out y, false);
-                    System.Diagnostics.Debug.Assert(x == matmapsz && y == matmapsz);
+                    matTex[0] = meta.normal == null ? null : Png.FromStream(scene.game.assetSource.OpenRead(meta.normal)).GetRawData;
+                    matTex[1] = meta.emissive == null ? null : Png.FromStream(scene.game.assetSource.OpenRead(meta.emissive)).GetRawData;
+                    matTex[2] = meta.diffuse == null ? null : Png.FromStream(scene.game.assetSource.OpenRead(meta.diffuse)).GetRawData;
+                    matTex[3] = meta.specular == null ? null : Png.FromStream(scene.game.assetSource.OpenRead(meta.specular)).GetRawData;
                 }
             }
 
@@ -106,7 +102,7 @@ namespace LD44.Components.Map
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2DArray);
             Graphics.ThrowErrors();
 
-            mapData = new HeightMapData(Game.assetSource.OpenRead("Textures/Map/Height.png"));
+            mapData = new HeightMapData(scene.game.assetSource.OpenRead("Textures/Map/Height.png"));
             physics = new Physical(this);
             physics.shapes.Clear();
             physics.isStatic = true;
@@ -124,7 +120,7 @@ namespace LD44.Components.Map
                     currentShape.Update(transform, true);
                     currentShape.epaSupportFunction = searchDirection => EpaCellSupport(searchDirection, currentShape);
                 }
-            shader = scene.game.shaders.Load("shaders/map.fx", this);
+            shader = scene.game.shaders.Load("Shaders/Map.fx", this);
             mesh = mapData.CreateMesh(scene.game.graphics);
         }
 

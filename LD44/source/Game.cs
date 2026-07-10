@@ -1,30 +1,46 @@
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using ChaosFramework.Collections;
+using ChaosFramework.Components;
+using ChaosFramework.Graphics.Imaging;
+using ChaosFramework.Graphics.Imaging.Formats;
 using ChaosFramework.Graphics.OpenGl;
 using ChaosFramework.Graphics.OpenGl.AssetContainers;
-using ChaosFramework.Components;
+using ChaosFramework.Input;
+using ChaosFramework.Input.InputEvents;
 using ChaosFramework.IO.Streams;
-using ChaosFramework.IO.Streams.Sources;
 using ChaosFramework.Math.Vectors;
 using ChaosFramework.Physics;
+using ChaosFramework.Platform;
 using ChaosFramework.Sound;
 using ChaosFramework.Sound.OpenAL;
-using ChaosUtil.Primitives;
 using ChaosUtil.Serialization.Text;
-using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
 
 namespace LD44
 {
     public class Game : BaseGame
     {
-        public class WindowsMessageQueue : MessageQueue
-        {
-            void MessageQueue.ProcessMessages()
-            {
-                Application.DoEvents();
-            }
-        }
+        enum InputLayers { One }
 
-        public static readonly StreamSource assetSource = new FileStreamSource(new System.IO.DirectoryInfo("Assets"));
+        readonly InputContext input;
+
+        public bool IsKeyDown(Keyboard.HidUsage hidUsage)
+            => input.EnumerateDevices<Keyboard>().Any(keyboard => keyboard[hidUsage].down);
+
+        public bool IsMouseDown(Mouse.ButtonSemantic button)
+            => input.EnumerateDevices<Mouse>().Any(mouse => mouse.buttons[(int)button].down);
+
+        public float MouseX()
+            => input.EnumerateDevices<Mouse>().Sum(mouse => mouse.x.value);
+
+        public float MouseY()
+            => input.EnumerateDevices<Mouse>().Sum(mouse => mouse.y.value);
+
+        public float Scroll()
+            => input.EnumerateDevices<Mouse>().Sum(mouse => mouse.scroll.value);
+        public StreamSource assetSource {get; private set; }
 
         internal static void PrepareIO()
             =>  Parse.AddParser<Vector2i>(Parsers.ParseVector2i);
@@ -41,92 +57,134 @@ namespace LD44
         public Graphics graphics;
         public Settings settings;
         public Audio audio;
+        public PresentationContext window;
 
         Music music;
 
         bool preventRedrawOnResize = false;
 
-        public OpenTK.Input.KeyboardState keyboard;
-        public OpenTK.Input.MouseState mouse;
-
-        public readonly MessageQueue messageQueue;
-        public readonly Form window;
+        public readonly PlatformContext platformContext;
 
         bool lockF11;
 
-        public Game(WindowsMessageQueue messageQueue, Form window)
-            : base(messageQueue)
+        readonly AdvancedLinkedList<Task> backgroundWork = [];
+
+        public Game(PlatformContext platformContext, PresentationContext window, System.Func<InputContext, InputDeviceHost> createInputContext)
+            : base(platformContext.messageQueue)
         {
-            this.messageQueue = messageQueue;
             this.window = window;
-            System.Windows.Forms.Cursor.Hide();
-            window.Cursor.Dispose();
-            window.FormClosing += Terminate;
+            this.platformContext = platformContext;
+            input = new InputContext(typeof(InputLayers), createInputContext);
+            input.UpdateDeviceList();
+            platformContext.Terminate += Terminate;
         }
 
         public override void LoadGame()
         {
             base.LoadGame();
-            gameLoop = new ChaosFramework.Components.GameLoop.CappedVariableTimeLoop(messageQueue, settings.maxFPS);
+            gameLoop = new ChaosFramework.Components.GameLoop.CappedVariableTimeLoop(platformContext.messageQueue, settings.maxFPS);
+
+            assetSource = new ChaosFramework.IO.ChaosArchive(new System.IO.FileInfo("./assets.cha"), false);
 
             audio = new Audio();
             samples = new SoundDataContainer(assetSource, false);
             music = new Music(audio, assetSource.OpenRead("Music/music.ogg"));
             music.PlayLoop(1);
 
-            graphics = new Graphics(window, 3, 3);
-            (fonts = new FontContainer(assetSource, graphics, false)).LoadDirectory("Fonts", new[] { ".chf2" }, true, null);
-            (textures = new TextureContainer(assetSource, graphics.dispatcher, false)).LoadDirectory("Textures", new[] { ".png" }, true, null);
-            (materials = new MaterialContainer(assetSource, graphics, textures, false)).LoadDirectory("Materials", new[] { ".mat" }, true, null);
-            (meshes = new MeshContainer(assetSource, graphics.dispatcher, false)).LoadDirectory("Models", new[] { ".gmdl" }, true, null);
-            (shaderCode = new ShaderCodeContainer(new StreamSourceCollection(StreamSources.shaderCode, assetSource))).LoadDirectory("Shaders", new[] { ".fx" }, true, null);
-            (shaders = new ShaderContainer(assetSource, graphics, shaderCode)).LoadDirectory("Shaders", new[] { ".fx" }, true, null);
-            (animations = new AnimationContainer(assetSource, false)).LoadDirectory("Animations", new[] { ".anim" }, true, null);
-            (shapes = new ShapeContainer(assetSource)).LoadDirectory("Models", new[] { ".obj" }, true, null);
+            graphics = new Graphics(platformContext.glContext, 3, 3);
+            (fonts = new FontContainer(assetSource, graphics, false)).LoadDirectory("Fonts", new[] { ".chf2" }, true, this);
+            (textures = new TextureContainer(assetSource, graphics.dispatcher, false)).LoadDirectory("Textures", new[] { ".png" }, true, this);
+            (materials = new MaterialContainer(assetSource, graphics, textures, false)).LoadDirectory("Materials", new[] { ".mat" }, true, this);
+            (meshes = new MeshContainer(assetSource, graphics.dispatcher, false)).LoadDirectory("Models", new[] { ".gmdl" }, true, this);
+            (shaderCode = new ShaderCodeContainer(new StreamSourceCollection(StreamSources.shaderCode, assetSource))).LoadDirectory("Shaders", new[] { ".fx" }, true, this);
+            (shaders = new ShaderContainer(assetSource, graphics, shaderCode)).LoadDirectory("Shaders", new[] { ".fx" }, true, this);
+            (animations = new AnimationContainer(assetSource, false)).LoadDirectory("Animations", new[] { ".anim" }, true, this);
+            (shapes = new ShapeContainer(assetSource)).LoadDirectory("Models", new[] { ".obj" }, true, this);
             scenes.Add(new WorldScene(this));
 
-            window.BackgroundImage.Dispose();
-            window.BackgroundImage = null;
+            // window.BackgroundImage.Dispose();
+            // window.BackgroundImage = null;
         }
 
         protected override void Update()
         {
-            keyboard = OpenTK.Input.Keyboard.GetState();
-            mouse = OpenTK.Input.Mouse.GetState();
+            input.UpdateInputConsumption();
 
-            bool toggleFullScreen = keyboard.IsKeyDown(OpenTK.Input.Key.F11);
+            input.AddHandler<InputPushEvent<Keyboard.Key>, Keyboard.Key, InputChange>(InputLayers.One, TakeScreenshot);
+
+            bool toggleFullScreen = IsKeyDown(Keyboard.HidUsage.F11);
             if (toggleFullScreen && !lockF11)
             {
                 preventRedrawOnResize = true;
-                graphics.SetFullScreen(!graphics.fullscreen, new Vector2i(settings.deferredShaderSize.x, settings.deferredShaderSize.y));
+                // graphics.SetFullScreen(!graphics.fullscreen, new Vector2i(settings.deferredShaderSize.x, settings.deferredShaderSize.y));
                 preventRedrawOnResize = false;
             }
             lockF11 = toggleFullScreen;
 
+            foreach(Task t in backgroundWork)
+                if (t.IsCompleted)
+                    backgroundWork.RemoveCurrent();
+
             base.Update();
 
-            if (state == State.Running)
-                if (ChaosUtil.Platform.Windows.WinAPI.winuser.GetActiveWindow.Invoke() == window.Handle)
-                    System.Windows.Forms.Cursor.Position = new System.Drawing.Point(window.Location.X + window.Width / 2, window.Location.Y + window.Height / 2);
+            // if (state == State.Running)
+            //     if (ChaosUtil.Platform.Windows.WinAPI.winuser.GetActiveWindow.Invoke() == window.Handle)
+            //         System.Windows.Forms.Cursor.Position = new System.Drawing.Point(window.Location.X + window.Width / 2, window.Location.Y + window.Height / 2);
         }
 
         protected override void Draw()
         {
-            GL.ClearColor(new OpenTK.Graphics.Color4(0, (byte)Random.instance.RndInt(255), 0, 255));
+            GL.ClearColor(0, (byte)ChaosUtil.Primitives.Random.instance.RndInt(255), 0, 255);
             Graphics.ThrowErrors();
             GL.Clear(ClearBufferMask.ColorBufferBit);
             Graphics.ThrowErrors();
             base.Draw();
-            graphics.graphicsContext.SwapBuffers();
+            window.Present();
         }
 
-        void Terminate(object _, System.Windows.Forms.FormClosingEventArgs __)
-            => Terminate();
+        bool TakeScreenshot(InputPushEvent<Keyboard.Key> e)
+        {
+            if (e.axis.hidKey == Keyboard.HidUsage.P)
+            {
+                string picFolder = System.Environment.GetFolderPath(
+                    System.Environment.SpecialFolder.MyPictures,
+                    System.Environment.SpecialFolderOption.None
+                    );
+                if (Directory.Exists(picFolder))
+                {
+                    DirectoryInfo outFolder = new(Path.GetFullPath(picFolder) + "/ChaosTechnology/LD44-BoredomBeGone/");
+                    FileInfo outFile;
+                    if (outFolder.Exists)
+                        for (uint i = 0; (outFile = new FileInfo($"{outFolder.FullName}/{i}.png")).Exists; ++i);
+                    else
+                    {
+                        outFolder.Create();
+                        outFile = new FileInfo($"{outFolder.FullName}/0.png");
+                    }
+
+                    // allocate the file preemptively for name resolution sake
+                    Stream targetStr = outFile.Create();
+
+                    Rgba8Image img = graphics.TakeScreenshot(Draw);
+                    backgroundWork.Add(Task.Run(() =>
+                    {
+                        using (targetStr)
+                            Png.Save(img, targetStr);
+                    }));
+                    return true;
+                }
+            }
+            return false;
+        }
 
         protected override void DoDispose()
         {
-            window.FormClosing -= Terminate;
+            foreach(Task t in backgroundWork)
+                t.Wait();
+            backgroundWork.Clear();
+
             base.DoDispose();
+            platformContext.Terminate -= Terminate;
             textures?.Dispose();
             materials?.Dispose();
             meshes?.Dispose();
@@ -139,6 +197,7 @@ namespace LD44
             shaderCode?.Dispose();
             animations?.Dispose();
             shapes?.Dispose();
+            input?.Dispose();
         }
     }
 }

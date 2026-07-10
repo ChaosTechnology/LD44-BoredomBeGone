@@ -8,12 +8,14 @@ using ChaosFramework.Graphics.OpenGl.ChaosShader;
 using ChaosFramework.Math;
 using ChaosFramework.Collections;
 using ChaosFramework.Math.Vectors;
+using ChaosFramework.Platform;
 using ChaosUtil.Reflection;
 using SysCol = System.Collections.Generic;
 using Rex = System.Text.RegularExpressions;
 
 namespace LD44.Menu
 {
+    using ChaosFramework.Input;
     using Components.Weapons;
     using WeaponAttribute = Components.Weapons.Weapon.WeaponAttribute;
 
@@ -46,8 +48,6 @@ namespace LD44.Menu
         System.Action onClose;
         byte menuMode;
 
-        public OpenTK.Input.MouseState mouse => game.mouse;
-
         public Shop(Game game)
             : base(game, typeof(UpdateLayers), typeof(DrawLayers))
         {
@@ -74,11 +74,11 @@ namespace LD44.Menu
             DisposeChildren();
 
             Bounds2f bounds;
-            float ratioChange = game.graphics.ratio / TARGET_RATIO;
-            if (game.graphics.ratio > TARGET_RATIO)
+            float ratioChange = game.window.Ratio() / TARGET_RATIO;
+            if (game.window.Ratio() > TARGET_RATIO)
                 bounds = new Bounds2f(-TARGET_RATIO, -1, TARGET_RATIO, 1);
             else
-                bounds = new Bounds2f(-game.graphics.ratio, -ratioChange, game.graphics.ratio, ratioChange);
+                bounds = new Bounds2f(-game.window.Ratio(), -ratioChange, game.window.Ratio(), ratioChange);
 
             btnClose = AddComponent<Button>();
             btnClose.bounds = new Bounds2f(
@@ -130,6 +130,10 @@ namespace LD44.Menu
             Button focused = null;
             btnSkill.click = () =>
             {
+                btnWeapon.enabled = true;
+                btnSpell.enabled = true;
+                btnSkill.enabled = false;
+
                 menuMode = 2;
                 lblDescription.text[0].text = "";
                 buttons.Clear();
@@ -190,6 +194,10 @@ namespace LD44.Menu
 
             btnWeapon.click = () =>
             {
+                btnWeapon.enabled = false;
+                btnSpell.enabled = true;
+                btnSkill.enabled = true;
+
                 menuMode = 0;
                 lblDescription.text[0].text = "";
                 buttons.Clear();
@@ -263,6 +271,10 @@ namespace LD44.Menu
 
             btnSpell.click = () =>
             {
+                btnWeapon.enabled = true;
+                btnSpell.enabled = false;
+                btnSkill.enabled = true;
+
                 menuMode = 1;
                 lblDescription.text[0].text = "";
                 buttons.Clear();
@@ -368,10 +380,10 @@ namespace LD44.Menu
 
         void UpdateCursor()
         {
-            Vector3f newMouseData = new Vector3f(mouse.X, mouse.Y, mouse.WheelPrecise);
+            Vector3f newMouseData = new Vector3f(game.MouseX(), game.MouseY(), game.Scroll() );
             mouseDelta = new Vector3f(MOUSE_SENSITIVITY * (newMouseData.x - oldMouseData.x), -MOUSE_SENSITIVITY * (newMouseData.y - oldMouseData.y), newMouseData.z - oldMouseData.z);
             mousePosition += mouseDelta;
-            mousePosition.x = Clamp(-game.graphics.ratio, game.graphics.ratio, mousePosition.x);
+            mousePosition.x = Clamp(-game.window.Ratio(), game.window.Ratio(), mousePosition.x);
             mousePosition.y = Clamp(-1, 1, mousePosition.y);
             oldMouseData = newMouseData;
         }

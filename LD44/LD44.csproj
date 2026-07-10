@@ -6,22 +6,18 @@
     <AssemblyName>Boredom Be Gone</AssemblyName>
     <RootNamespace>LD44</RootNamespace>
     <ProjectGuid>{38362ABA-E942-498F-A126-388DEF1A8E78}</ProjectGuid>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ApplicationIcon>Resources/icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <!-- Properties -->
   <Import Project="$(SolutionDir)submodules/ChaosPresets.Targets/Properties/Common.targets" />
   <Import Project="$(SolutionDir)submodules/ChaosPresets.Targets/Properties/OutputType/Executable.targets" />
 
-  <!-- Configurations -->
-  <Import Project="$(SolutionDir)submodules/ChaosPresets.Targets/Configurations.targets" />
-
   <!-- Included Files -->
   <Import Project="$(SolutionDir)submodules/ChaosPresets.Targets/StandardResources.targets" />
   <ItemGroup>
     <Compile Include="source/**/*.cs" />
-    <None Include="Assets/**/*.*" Exclude="**/*.ini;**/*.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="License/**/*.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -37,14 +33,21 @@
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Core.targets" />
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Graphics.targets" />
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Graphics.OpenGL.targets" />
+  <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Input.targets" />
+  <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Input.OpenTK.targets" />
+  <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Math.targets" />
+  <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Platform.targets" />
+  <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Platform.Glfw.targets" />
+  <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Platform.WinForms.targets" />
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.IO.targets" />
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Physics.targets" />
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Shapes.targets" />
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Sound.targets" />
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Sound.OpenAL.targets" />
+  <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Input.RawInput.targets" />
 
   <ItemGroup>
-    <PackageReference Include="OpenTK" Version="3.0.1" />
+    <PackageReference Include="OpenTK" Version="4.9.4" />
     <PackageReference Include="System.Resources.Extensions" Version="9.0.0" />
   </ItemGroup>
 
@@ -53,5 +56,22 @@
 
   <!-- Build Tasks -->
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/BuildTasks/ChaosBuild.CodeFormatter.Tasks.ChangedProjectFiles.targets" />
+
+  <UsingTask
+    TaskName="ChaosArchive"
+    AssemblyFile="$(SolutionDir)submodules/ChaosFrameworkBuild.ArchiveCreator/build/bin/AnyCPU/Debug/netstandard2.0/ChaosFrameworkBuild.ArchiveCreator.dll"
+    /> <!-- TODO: do something about this hardcoded path -->
+
+  <Target
+    Name="CreateArchive"
+    BeforeTargets="BeforeBuild"
+    >
+    <ChaosArchive
+      SourceFolder="Assets"
+      TargetFile="assets.cha"
+      OutputPath="$(OutputPath)"
+      IntermediateOutputPath="$(IntermediateOutputPath)"
+      />
+  </Target>
 
 </Project>

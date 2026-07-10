@@ -102,12 +102,12 @@ namespace LD44.Components.Characters
 
         protected override void Create(CreateParameters cparams)
         {
-            mesh = scene.game.meshes.Load("Models/chosen one.gmdl", MeshLoadFlags.Animated, this);
+            mesh = scene.game.meshes.Load("Models/Chosen One.gmdl", MeshLoadFlags.Animated, this);
             shader = scene.game.graphics.shaders.skinnedNormalMap;
             mat = scene.game.materials.Load("Materials/Characters/Chosen One.mat", this);
             anim = scene.game.animations.Load("Animations/Chosen One.anim", this);
 
-            rig = Rig.FromStreamSource(Game.assetSource, "Animations/Chosen One.rig");
+            rig = Rig.FromStreamSource(scene.game.assetSource, "Animations/Chosen One.rig");
             boneSwordArm = rig.root.GetBoneByName("Lower Arm.L");
             boneSpellArm = rig.root.GetBoneByName("Lower Arm.R");
             boneHead = rig.root.GetBoneByName("Head");

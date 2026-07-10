@@ -1,6 +1,14 @@
 using System;
 using System.Reflection;
-using System.Windows.Forms;
+using ChaosFramework.Input;
+using ChaosFramework.Platform;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+
+#if !OS_WINDOWS
+using ChaosFramework.Platform.Glfw;
+#else
+using ChaosFramework.Platform.WinForms;
+#endif
 
 namespace LD44
 {
@@ -10,7 +18,7 @@ namespace LD44
         static void Main()
         {
             typeof(System.Globalization.CultureInfo).GetField("s_userDefaultCulture", BindingFlags.NonPublic | BindingFlags.Static).SetValue(null, System.Globalization.CultureInfo.InvariantCulture);
-            System.Environment.CurrentDirectory = ChaosUtil.Platform.Windows.Paths.Application.GetExecutableDirectory();
+            System.Environment.CurrentDirectory = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             ChaosUtil.Reflection.AssemblyManager.RegisterAssemblies(
                 typeof(Program).Assembly,
@@ -25,26 +33,39 @@ namespace LD44
                 typeof(ChaosFramework.Graphics.Text.GlyphDimensions).Assembly
                 );
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+#if OS_WINDOWS
+            System.Windows.Forms.Application.EnableVisualStyles();
+            System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
+#endif
             Game.PrepareIO();
 
-            Game g = new Game(new Game.WindowsMessageQueue(), new Form());
-
             bool hadSettings = System.IO.File.Exists(Settings.FILE);
-            g.settings = hadSettings
+            Settings settings = hadSettings
                 ? Settings.Load(Settings.FILE)
                 : new Settings();
             if (!hadSettings)
-                g.settings.Save(Settings.FILE);
+                settings.Save(Settings.FILE);
 
-            g.window.Icon = Properties.Resources.icon;
-            g.window.Text = "Boredom Be Gone";
-            g.window.MinimumSize = new System.Drawing.Size(800, 450);
-            g.window.Size = new System.Drawing.Size(g.settings.deferredShaderSize.x, g.settings.deferredShaderSize.y);
-            g.window.BackgroundImageLayout = ImageLayout.Stretch;
-            g.window.BackgroundImage = new System.Drawing.Bitmap("Assets/LoadingScreen.png");
-            g.window.Show();
+            string title = "LD44-BoredomBeGone";
+
+#if OS_WINDOWS
+            WinFormsPlatformContext platformContext = new WinFormsPlatformContext();
+            PresentationContext window = platformContext.CreateFullscreen(title, platformContext.PrimaryMonitor);
+            Func<InputContext, InputDeviceHost> createHost = _ => new ChaosFramework.Input.RawInput.RawInputDeviceHost(_);
+#else
+            GlfwPlatformContext platformContext = new GlfwPlatformContext();
+            PresentationContext window = platformContext.CreateFullscreen(title, platformContext.PrimaryMonitor);
+            Func<InputContext, InputDeviceHost> createHost = context => new ChaosFramework.Input.OpenTk.DeviceHost(context, ((GlfwFullscreen)window).window);
+#endif
+
+            window.SetIcon(
+                new ApplicationIcon(
+                    ApplicationIcon.IconFormat.ico,
+                    () => Properties.Resources.ResourceManager.GetStream(nameof(Properties.Resources.icon)))
+                    );
+
+            Game g = new Game(platformContext, window, createHost);
+            g.settings = settings;
             g.Run();
         }
     }

@@ -3,6 +3,7 @@ using ChaosFramework.Graphics.OpenGl.AssetContainers;
 using ChaosFramework.Components;
 using ChaosFramework.Graphics.OpenGl.ChaosShader;
 using ChaosFramework.Math.Vectors;
+using ChaosFramework.Platform;
 using static ChaosFramework.Math.Constants;
 
 namespace LD44
@@ -34,7 +35,7 @@ namespace LD44
             : base(g, numUpdate, numDraw)
         {
             hudView = new Camera();
-            hudView.Update(new Vector3f(0, 0, -1), new Vector3f(0, 0, 1), new Vector3f(0, 1, 0), 0.5f, 1.5f, PI_QUART, g.graphics.ratio);
+            hudView.Update(new Vector3f(0, 0, -1), new Vector3f(0, 0, 1), new Vector3f(0, 1, 0), 0.5f, 1.5f, PI_QUART, g.window.Ratio());
             font = game.fonts.Load("Fonts/font.chf2", this);
             textShader = game.graphics.shaders.text;
         }
@@ -53,7 +54,7 @@ namespace LD44
                 hudView.nearClip,
                 hudView.farClip,
                 hudView.verticalViewAngle,
-                game.graphics.ratio
+                game.window.Ratio()
                 );
     }
 }

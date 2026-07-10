@@ -35,7 +35,7 @@ namespace LD44
             return settings;
         }
 
-        public Vector2i deferredShaderSize = new Vector2i(1366, 768);
+        public Vector2i deferredShaderSize = -1;
         public float transparencyScaling = 1;
         public int transparencyLayers = 20;
         public int maxFPS = 60;

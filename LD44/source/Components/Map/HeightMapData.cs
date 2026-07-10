@@ -1,4 +1,6 @@
 using ChaosFramework.Collections;
+using ChaosFramework.Graphics.Imaging;
+using ChaosFramework.Graphics.Imaging.Formats;
 using ChaosFramework.Graphics.OpenGl;
 using ChaosFramework.Graphics.OpenGl.Model;
 using ChaosFramework.Math.Vectors;
@@ -6,7 +8,6 @@ using System;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using SysCol = System.Collections.Generic;
-using SysDraw = System.Drawing;
 
 namespace LD44.Components.Map
 {
@@ -17,7 +18,6 @@ namespace LD44.Components.Map
         const int NUM_TEX_REPEATS = 1;
 
         static SysCol.Dictionary<Graphics, Mesh> graphicsMeshes = new SysCol.Dictionary<Graphics, Mesh>();
-        public static HeightMapData[] presets;
 
         public static Vector3f[] hullBoxVerts = new Vector3f[] {
             new Vector3f(-0.5f, LOW_CUT, -0.5f),
@@ -29,20 +29,6 @@ namespace LD44.Components.Map
             new Vector3f( 0.5f, ROUGHNESS, -0.5f),
             new Vector3f( 0.5f, ROUGHNESS, 0.5f),
         };
-
-        static readonly object staticCtorLock = new object();
-        static HeightMapData()
-        {
-            lock (staticCtorLock)
-            {
-                string path;
-                int i = 0;
-                LinkedList<HeightMapData> data = new LinkedList<HeightMapData>();
-                while (System.IO.File.Exists(path = "Tiles/HeightMaps/" + i++ + ".png"))
-                    data.Add(new HeightMapData(Game.assetSource.OpenRead(path)));
-                presets = data.ToArray();
-            }
-        }
 
         public float cellSize, numCells;
         public int vertsPerRow;
@@ -57,25 +43,15 @@ namespace LD44.Components.Map
 
         public HeightMapData(System.IO.Stream srcFile)
         {
-            SysDraw.Bitmap img = new SysDraw.Bitmap(srcFile);
-            vertsPerRow = img.Width;
-            if (vertsPerRow != img.Height)
+            Rgba8Image img = Png.FromStream(srcFile);
+            vertsPerRow = (int)img.width;
+            if (vertsPerRow != img.height)
                 throw new Exception("map must be square");
 
-            BitmapData bitMap = img.LockBits(new SysDraw.Rectangle(0, 0, img.Width, img.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-            byte[] data = new byte[bitMap.Stride * bitMap.Height];
             heightValues = new float[vertsPerRow, vertsPerRow];
-            try
-            {
-                Marshal.Copy(bitMap.Scan0, data, 0, data.Length);
-                for (int x = 0; x < bitMap.Width; x++)
-                    for (int z = 0; z < bitMap.Height; z++)
-                        heightValues[x, z] = (float)data[(x + z * bitMap.Width) * 4] / 255 * ROUGHNESS;
-            }
-            finally
-            {
-                img.UnlockBits(bitMap);
-            }
+            for (uint x = 0; x < img.width; x++)
+                for (uint z = 0; z < img.height; z++)
+                    heightValues[x, z] = img[x, z].r / 255.0f * ROUGHNESS;
 
             numCells = vertsPerRow - 1;
             cellSize = 1f / numCells;
