@@ -64,7 +64,6 @@ namespace LD44
                     () => Properties.Resources.ResourceManager.GetStream(nameof(Properties.Resources.icon)))
                     );
 
-            // TODO: render loading screen again
             Game g = new Game(platformContext, window, createHost);
             g.settings = settings;
             g.Run();
