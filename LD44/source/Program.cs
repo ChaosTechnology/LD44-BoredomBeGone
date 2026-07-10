@@ -50,7 +50,7 @@ namespace LD44
 
 #if OS_WINDOWS
             WinFormsPlatformContext platformContext = new WinFormsPlatformContext();
-            PresentationContext window = platformContext.CreateFullscreen(title, platformContext.PrimaryMontior);
+            PresentationContext window = platformContext.CreateFullscreen(title, platformContext.PrimaryMonitor);
             Func<InputContext, InputDeviceHost> createHost = _ => new ChaosFramework.Input.RawInput.RawInputDeviceHost(_);
 #else
             GlfwPlatformContext platformContext = new GlfwPlatformContext();
