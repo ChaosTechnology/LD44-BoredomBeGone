@@ -43,69 +43,66 @@ namespace LD44.Components.Map
             LinkedList<Vector3f> branchOrigins = BranchOrigins(mesh.content.data);
             MeshShape collisionBase = new MeshShape(mesh.content.data.pos.ToArray(), true);
 
-            using (System.IO.Stream str = scene.game.assetSource.OpenRead("Textures/Map/MapBounds.png"))
+            Rgba8Image bm = scene.game.images.Load("Textures/Map/MapBounds.png", this);
+            uint width = bm.w;
+            uint height = bm.h;
+
+            for (int i = 0; i < NUM_TREES; i++)
             {
-                Rgba8Image bm = Png.FromStream(str);
-                uint width = bm.w;
-                uint height = bm.h;
+                Vector2f rnd = new Vector2f(Random.instance.Rnd(1), Random.instance.Rnd(1));
+                uint x = (uint)(rnd.x * width);
+                uint y = (uint)(rnd.y * height);
+                byte discardChance = bm[x, y].g;
+                if (Random.instance.RndByte() >= discardChance)
+                    continue;
 
-                for (int i = 0; i < NUM_TREES; i++)
+                Vector3f pos = new Vector3f(HeightMap.MAP_SIZE * (rnd.x - 0.5f), 0, HeightMap.MAP_SIZE * (0.5f - rnd.y));
+                if (Abs(pos.x - scene.satan.position.x) < WorldScene.SATANS_SAFESPACE ||
+                    Abs(pos.z - scene.satan.position.y) < WorldScene.SATANS_SAFESPACE)
+                    continue;
+
+                float h = Random.instance.Rnd(0.3f, 1.0f);
+                h *= h;
+                h *= 3.5f;
+                pos.y = scene.map.GetHeightAt(pos.x, pos.z);
+                Matrix treeTransform = Matrix.Scaling(h) * Matrix.RotationY(Random.instance.Rnd(2 * PI)) * Matrix.Translation(pos);
+                instancer.AddInstance(treeTransform);
+
+                SysCol.IEnumerator<Vector3f> loopCenters = ((SysCol.IEnumerable<Vector3f>)branchOrigins).GetEnumerator();
+                loopCenters.MoveNext();
+
+                const float MIN_DEVIATION = PI_QUART;
+                Vector3f lowLoop = branchOrigins.first;
+                float angle = 0;
+                for (float branchHeight = 2; branchHeight < branchOrigins.last.y; branchHeight += Random.instance.Rnd(0.2f, 1))
                 {
-                    Vector2f rnd = new Vector2f(Random.instance.Rnd(1), Random.instance.Rnd(1));
-                    uint x = (uint)(rnd.x * width);
-                    uint y = (uint)(rnd.y * height);
-                    byte discardChance = bm[x, y].g;
-                    if (Random.instance.RndByte() >= discardChance)
-                        continue;
-
-                    Vector3f pos = new Vector3f(HeightMap.MAP_SIZE * (rnd.x - 0.5f), 0, HeightMap.MAP_SIZE * (0.5f - rnd.y));
-                    if (Abs(pos.x - scene.satan.position.x) < WorldScene.SATANS_SAFESPACE ||
-                        Abs(pos.z - scene.satan.position.y) < WorldScene.SATANS_SAFESPACE)
-                        continue;
-
-                    float h = Random.instance.Rnd(0.3f, 1.0f);
-                    h *= h;
-                    h *= 3.5f;
-                    pos.y = scene.map.GetHeightAt(pos.x, pos.z);
-                    Matrix treeTransform = Matrix.Scaling(h) * Matrix.RotationY(Random.instance.Rnd(2 * PI)) * Matrix.Translation(pos);
-                    instancer.AddInstance(treeTransform);
-
-                    SysCol.IEnumerator<Vector3f> loopCenters = ((SysCol.IEnumerable<Vector3f>)branchOrigins).GetEnumerator();
-                    loopCenters.MoveNext();
-
-                    const float MIN_DEVIATION = PI_QUART;
-                    Vector3f lowLoop = branchOrigins.first;
-                    float angle = 0;
-                    for (float branchHeight = 2; branchHeight < branchOrigins.last.y; branchHeight += Random.instance.Rnd(0.2f, 1))
+                    angle += Random.instance.Rnd(MIN_DEVIATION, 2 * (PI - MIN_DEVIATION));
+                    while (branchHeight > loopCenters.Current.y)
                     {
-                        angle += Random.instance.Rnd(MIN_DEVIATION, 2 * (PI - MIN_DEVIATION));
-                        while (branchHeight > loopCenters.Current.y)
-                        {
-                            lowLoop = loopCenters.Current;
-                            loopCenters.MoveNext();
-                        }
-
-                        Vector3f delta = loopCenters.Current - lowLoop;
-                        Vector3f branchPosition = lowLoop + delta * (branchHeight - lowLoop.y) / delta.y;
-
-                        instancer.AddInstance(
-                            Matrix.RotationY(angle)
-                            * Matrix.RotationX(PI_HALF + Random.instance.Rnd(0.5f))
-                            * Matrix.RotationY(Random.instance.Rnd(2 * PI))
-                            * Matrix.Scaling((1 - 0.78f * (branchHeight / branchOrigins.last.y)) * 0.35f)
-                            * Matrix.Translation(branchPosition)
-                            * treeTransform
-                            );
+                        lowLoop = loopCenters.Current;
+                        loopCenters.MoveNext();
                     }
 
-                    Physical tree = new Physical(this);
-                    tree.shapes.Clear();
-                    tree.isStatic = true;
-                    tree.shapes.Add(collisionBase.CloneTypeless());
-                    tree.state.baseTransform = treeTransform;
-                    scene.physics.Add(tree);
-                    physics.Add(tree);
+                    Vector3f delta = loopCenters.Current - lowLoop;
+                    Vector3f branchPosition = lowLoop + delta * (branchHeight - lowLoop.y) / delta.y;
+
+                    instancer.AddInstance(
+                        Matrix.RotationY(angle)
+                        * Matrix.RotationX(PI_HALF + Random.instance.Rnd(0.5f))
+                        * Matrix.RotationY(Random.instance.Rnd(2 * PI))
+                        * Matrix.Scaling((1 - 0.78f * (branchHeight / branchOrigins.last.y)) * 0.35f)
+                        * Matrix.Translation(branchPosition)
+                        * treeTransform
+                        );
                 }
+
+                Physical tree = new Physical(this);
+                tree.shapes.Clear();
+                tree.isStatic = true;
+                tree.shapes.Add(collisionBase.CloneTypeless());
+                tree.state.baseTransform = treeTransform;
+                scene.physics.Add(tree);
+                physics.Add(tree);
             }
 
             instancer.UpdateBuffer();
