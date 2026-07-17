@@ -24,8 +24,8 @@ namespace LD44.Components.Map
 
         protected override void Create(CreateParameters cparams)
         {
-            Rgba8Image chanceMap = Png.FromStream(scene.game.assetSource.OpenRead("Textures/Map/FoeLoc.png"));
-            Rgba8Image statMap = Png.FromStream(scene.game.assetSource.OpenRead("Textures/Map/FoeStat.png"));
+            Rgba8Image chanceMap = scene.game.images.Load("Textures/Map/FoeLoc.png", this);
+            Rgba8Image statMap = scene.game.images.Load("Textures/Map/FoeStat.png", this);
 
             uint width = statMap.w;
             uint height = statMap.h;

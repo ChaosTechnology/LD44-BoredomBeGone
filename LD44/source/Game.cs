@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using ChaosFramework.Collections;
 using ChaosFramework.Components;
 using ChaosFramework.Core;
+using ChaosFramework.Graphics.AssetContainers;
 using ChaosFramework.Graphics.Imaging;
 using ChaosFramework.Graphics.Imaging.Formats;
 using ChaosFramework.Graphics.OpenGl;
@@ -19,6 +21,7 @@ using ChaosFramework.Platform;
 using ChaosFramework.Sound;
 using ChaosFramework.Sound.OpenAL;
 using ChaosUtil.Serialization.Text;
+using LD44.Components.Map;
 using OpenTK.Graphics.OpenGL;
 using SysCol = System.Collections.Generic;
 
@@ -27,6 +30,17 @@ namespace LD44
     public class Game : BaseGame
     {
         enum InputLayers { One }
+
+        static readonly HashSet<string> STATIC_IMAGE_ASSETS = new HashSet<string>()
+        {
+            "Textures/Map/FoeLoc.png",
+            "Textures/Map/FoeStat.png",
+            "Textures/Map/MapBounds.png",
+            "Textures/Map/Height.png"
+        };
+        static bool IsPreloadedImage(Rgba8ImageContainer.Key key)
+            => HeightMap.IsMapTextureFile(key.key)
+            || STATIC_IMAGE_ASSETS.Contains(key.key);
 
         readonly InputContext input;
 
@@ -62,6 +76,7 @@ namespace LD44
         public Settings settings;
         public Audio audio;
         public PresentationContext window;
+        public Rgba8ImageContainer images;
 
         Music music;
 
@@ -124,6 +139,7 @@ namespace LD44
             },
             () => (animations = new AnimationContainer(assetSource, false)).LoadAllAsync(@"^Animations.*\.fx$", this),
             () => (shapes = new ShapeContainer(assetSource)).LoadAllAsync(@"^Models.*\.obj$", this),
+            () => (images = new Rgba8ImageContainer(assetSource)).LoadAllAsync(IsPreloadedImage, this)
             ]);
             scenes.Add(new WorldScene(this));
 
