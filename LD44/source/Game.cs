@@ -1,8 +1,11 @@
+using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using ChaosFramework.Collections;
 using ChaosFramework.Components;
+using ChaosFramework.Core;
 using ChaosFramework.Graphics.Imaging;
 using ChaosFramework.Graphics.Imaging.Formats;
 using ChaosFramework.Graphics.OpenGl;
@@ -17,6 +20,7 @@ using ChaosFramework.Sound;
 using ChaosFramework.Sound.OpenAL;
 using ChaosUtil.Serialization.Text;
 using OpenTK.Graphics.OpenGL;
+using SysCol = System.Collections.Generic;
 
 namespace LD44
 {
@@ -79,6 +83,19 @@ namespace LD44
             platformContext.Terminate += Terminate;
         }
 
+        void RunTasks(SysCol.IEnumerable<Func<Task>> tasks)
+        {
+            var task = Task.WhenAll(tasks.Select(Task.Run));
+            while (!task.IsCompleted)
+            {
+                Dispatcher.dispatcher.ExecuteDispatchers(10);
+                platformContext.messageQueue();
+                Thread.Sleep(10);
+            }
+            if (!task.IsCompletedSuccessfully)
+                throw task.Exception;
+        }
+
         public override void LoadGame()
         {
             base.LoadGame();
@@ -92,14 +109,22 @@ namespace LD44
             music.PlayLoop(1);
 
             graphics = new Graphics(platformContext.glContext, 3, 3);
-            (fonts = new FontContainer(assetSource, graphics, false)).LoadDirectory("Fonts", new[] { ".chf2" }, true, this);
-            (textures = new TextureContainer(assetSource, graphics.dispatcher, false)).LoadDirectory("Textures", new[] { ".png" }, true, this);
-            (materials = new MaterialContainer(assetSource, graphics, textures, false)).LoadDirectory("Materials", new[] { ".mat" }, true, this);
-            (meshes = new MeshContainer(assetSource, graphics.dispatcher, false)).LoadDirectory("Models", new[] { ".gmdl" }, true, this);
-            (shaderCode = new ShaderCodeContainer(new StreamSourceCollection(StreamSources.shaderCode, assetSource))).LoadDirectory("Shaders", new[] { ".fx" }, true, this);
-            (shaders = new ShaderContainer(assetSource, graphics, shaderCode)).LoadDirectory("Shaders", new[] { ".fx" }, true, this);
-            (animations = new AnimationContainer(assetSource, false)).LoadDirectory("Animations", new[] { ".anim" }, true, this);
-            (shapes = new ShapeContainer(assetSource)).LoadDirectory("Models", new[] { ".obj" }, true, this);
+            RunTasks([
+            () => (fonts = new FontContainer(assetSource, graphics, false)).LoadAllAsync(@"^Fonts.*\.chf2$", this),
+            async () =>
+            {
+                await (textures = new TextureContainer(assetSource, graphics.dispatcher, false)).LoadAllAsync(@"^Textures.*\.png$", this);
+                await (materials = new MaterialContainer(assetSource, graphics, textures, false)).LoadAllAsync(@"^Materials.*\.mat$", this);
+            },
+            () => (meshes = new MeshContainer(assetSource, graphics.dispatcher, false)).LoadAllAsync(@"Models.*\.gmdl$", this),
+            async () =>
+            {
+                await (shaderCode = new ShaderCodeContainer(new StreamSourceCollection(StreamSources.shaderCode, assetSource))).LoadAllAsync(@"^Shaders.*\.fx$", this);
+                await (shaders = new ShaderContainer(assetSource, graphics, shaderCode)).LoadAllAsync(@"^Shaders.*\.fx", this);
+            },
+            () => (animations = new AnimationContainer(assetSource, false)).LoadAllAsync(@"^Animations.*\.fx$", this),
+            () => (shapes = new ShapeContainer(assetSource)).LoadAllAsync(@"^Models.*\.obj$", this),
+            ]);
             scenes.Add(new WorldScene(this));
 
             // window.BackgroundImage.Dispose();
