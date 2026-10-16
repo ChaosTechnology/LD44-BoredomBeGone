@@ -41,9 +41,8 @@ namespace LD44.Components.Map
 
         public Vector3f[,][] physicalShapeVerts;
 
-        public HeightMapData(System.IO.Stream srcFile)
+        public HeightMapData(Rgba8Image img)
         {
-            Rgba8Image img = Png.FromStream(srcFile);
             vertsPerRow = (int)img.width;
             if (vertsPerRow != img.height)
                 throw new Exception("map must be square");

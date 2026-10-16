@@ -20,7 +20,12 @@ namespace LD44.Components.Map
     public class HeightMap : Component<WorldScene>
     {
         static readonly System.Text.RegularExpressions.Regex mapfileRegex = new System.Text.RegularExpressions.Regex(
-            @"[\\/]*Materials[\\/]+Map[\\/]+\d\.mat",
+            @"[\\/]*Materials[\\/]+Map[\\/]+\d\.mat$",
+            System.Text.RegularExpressions.RegexOptions.Compiled
+            );
+
+        static readonly System.Text.RegularExpressions.Regex mapImagefileRegex = new System.Text.RegularExpressions.Regex(
+            @"[\\/]*Textures[\\/]+Map[\\/]+\d.*\.png$",
             System.Text.RegularExpressions.RegexOptions.Compiled
             );
 
@@ -30,6 +35,9 @@ namespace LD44.Components.Map
 
         static bool IsMapFile(string str)
             => mapfileRegex.IsMatch(str);
+
+        public static bool IsMapTextureFile(string str)
+            => mapImagefileRegex.IsMatch(str);
 
         // TODO: Lazy<Programmer> detected
         static System.Lazy<Func<RawDataHandle>> blackFallback = new System.Lazy<Func<RawDataHandle>>(() =>
@@ -77,10 +85,10 @@ namespace LD44.Components.Map
                 using (StreamReader matRd = new StreamReader(matStr))
                 {
                     Material.LayerKeys meta = Material.Parse(matRd, matKey);
-                    matTex[0] = meta.normal == null ? null : Png.FromStream(scene.game.assetSource.OpenRead(meta.normal)).GetRawData;
-                    matTex[1] = meta.emissive == null ? null : Png.FromStream(scene.game.assetSource.OpenRead(meta.emissive)).GetRawData;
-                    matTex[2] = meta.diffuse == null ? null : Png.FromStream(scene.game.assetSource.OpenRead(meta.diffuse)).GetRawData;
-                    matTex[3] = meta.specular == null ? null : Png.FromStream(scene.game.assetSource.OpenRead(meta.specular)).GetRawData;
+                    matTex[0] = meta.normal == null ? null : scene.game.images.Load(meta.normal, this).content.GetRawData;
+                    matTex[1] = meta.emissive == null ? null : scene.game.images.Load(meta.emissive, this).content.GetRawData;
+                    matTex[2] = meta.diffuse == null ? null :  scene.game.images.Load(meta.diffuse, this).content.GetRawData;
+                    matTex[3] = meta.specular == null ? null : scene.game.images.Load(meta.specular, this).content.GetRawData;
                 }
             }
 
@@ -102,7 +110,7 @@ namespace LD44.Components.Map
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2DArray);
             Graphics.ThrowErrors();
 
-            mapData = new HeightMapData(scene.game.assetSource.OpenRead("Textures/Map/Height.png"));
+            mapData = new HeightMapData(scene.game.images.Load("Textures/Map/Height.png", this));
             physics = new Physical(this);
             physics.shapes.Clear();
             physics.isStatic = true;
